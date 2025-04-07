@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+model Account {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  password String
+  name     String
+
+  data     Data[]
+}
+
+model Location {
+  id        Int     @id @default(autoincrement())
+  latitude  Float
+  longitude Float
+
+  data      Data[]
+}
+
+model Data {
+  id         Int       @id @default(autoincrement())
+  location   Location  @relation(fields: [locationId], references: [id])
+  locationId Int
+
+  account    Account   @relation(fields: [accountId], references: [id])
+  accountId  Int
+
+  timestamp  DateTime  @default(now())
+
+  parameters Json
+
+  wqi        Json
+}
