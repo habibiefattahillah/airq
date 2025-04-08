@@ -73,7 +73,7 @@ export default function LeafletInputMap({ existingLocations, onSelect }: Props) 
                 click: () => handleExistingMarkerClick(loc),
                 }}
             >
-                <Popup>Lokasi ID: {loc.id}</Popup>
+                <Popup>{loc.name}</Popup>
             </Marker>
             ))}
 

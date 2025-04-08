@@ -9,7 +9,6 @@ export async function GET() {
         id: true,
         email: true,
         name: true,
-        // Do NOT include password unless you intend to (be careful)
         },
     })
 
