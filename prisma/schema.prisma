@@ -8,14 +8,14 @@ datasource db {
 }
 
 model Account {
-  id       Int      @id @default(autoincrement())
-  name     String
-  email    String   @unique
-  data     Data[]
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+  data  Data[]
 }
 
 model Location {
-  id        Int      @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   name      String
   latitude  Float
   longitude Float
@@ -23,12 +23,24 @@ model Location {
 }
 
 model Data {
-  id          Int       @id @default(autoincrement())
-  timestamp   DateTime  @default(now())
-  account     Account   @relation(fields: [accountId], references: [id])
-  accountId   Int
-  location    Location  @relation(fields: [locationId], references: [id])
-  locationId  Int
-  parameters  Json
-  wqi         Json
+  id         Int      @id @default(autoincrement())
+  timestamp  DateTime @default(now())
+  accountId  Int
+  locationId Int
+  parameters Json
+  wqi        Json
+  account    Account  @relation(fields: [accountId], references: [id])
+  location   Location @relation(fields: [locationId], references: [id])
+}
+
+model WaterQualityEntry {
+  id                        Int   @id @default(autoincrement())
+  dissolvedOxygenMgL        Float
+  dissolvedOxygenSaturation Float
+  specificConductanceUSCm   Float
+  temperatureWaterDegC      Float
+  turbidityNTU              Float
+  pHStdUnits                Float
+  tdsMgL                    Float
+  wqi                       Int
 }
