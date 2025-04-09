@@ -37,10 +37,9 @@ def main():
         print(json.dumps({"error": "Missing arguments"}))
         return
 
-    models = json.loads(sys.argv[1])  # ["4", "3"]
+    models = json.loads(sys.argv[1])
     parameters = json.loads(sys.argv[2])
 
-    # Order of inputs (must match model training)
     param_order = [
         "Temperatur",
         "OksigenTerlarut",
@@ -54,17 +53,21 @@ def main():
 
     model_results = {}
     for m in models:
-        if m == "RF":  # RF
+        if m == "RF":
             rf = load_rf_model()
-            model_results["RF"] = predict_rf(rf, X)
+            result = predict_rf(rf, X)
+            model_results["RF"] = {
+                "value": result,
+                "confidence": 1  # Dummy confidence
+            }
 
-    # Optional: majority vote or pick one
-    final_wqi = next(iter(model_results.values()))  # just take first model's prediction
+    final_wqi = next(iter(model_results.values()))["value"]
 
     print(json.dumps({
         "modelResults": model_results,
         "finalWQI": final_wqi
     }))
+
 
 if __name__ == "__main__":
     main()
