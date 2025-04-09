@@ -10,10 +10,17 @@ export async function GET() {
                 select: {
                     id: true,
                     name: true,
-                    // omit password and sensitive fields
                 },
             },
-            location: true,
+            location: {
+                select: {
+                id: true,
+                name: true,
+                latitude: true,
+                longitude: true,
+                },
+            },
+
         },
         });
 
