@@ -251,50 +251,63 @@ export default function DataInput() {
         },
     })
 
-    const onImputasi = async () => {
-        const res = await fetch("/api/dashboard", {
-            method: "GET",
+    const handleImputasi = async () => {
+        const input = {
+            "Dissolved_oxygen__DO___mg_L_": parameters.OksigenTerlarut,
+            "Dissolved_oxygen_saturation____": parameters.SaturasiOksigen,
+            "Specific_conductance__uS_cm_": parameters.Konduktivitas,
+            "Temperature__water__deg_C_": parameters.Temperatur,
+            "Turbidity__NTU_": parameters.Kekeruhan,
+            "pH__std_units_": parameters.PH,
+            // tdlMgL: parameters.ZatPadatTerlarut,
+        }
+
+        const res = await fetch("/api/imputasi", {
+            method: "POST",
+            body: JSON.stringify(
+                { row: input },
+            ),
             headers: { "Content-Type": "application/json" },
         })
+
         const imputed = await res.json()
-        console.log("Imputasi response:", imputed)
 
-        return imputed
-    }
+        console.log("Imputed data:", imputed)
 
-    const handleImputasi = async () => {
-        // const input = {
-        //     dissolvedOxygenMgL: parameters.OksigenTerlarut,
-        //     dissolvedOxygenSaturation: parameters.SaturasiOksigen,
-        //     specificConductance: parameters.Konduktivitas,
-        //     temperatureWaterDegC: parameters.Temperatur,
-        //     turbidityNTU: parameters.Kekeruhan,
-        //     pHStdUnits: parameters.PH,
-        //     tdlMgL: parameters.ZatPadatTerlarut,
-        // }
+        const imputedRow = imputed.imputed[0] // ✅ grab the first row of the result
 
-        // const res = await fetch("/api/imputasi", {
-        //     method: "POST",
-        //     body: JSON.stringify(input),
-        //     headers: { "Content-Type": "application/json" },
-        // })
+        const imputedValues = {
+            temperatureWaterDegC: imputedRow["Temperature__water__deg_C_"],
+            dissolvedOxygenMgL: imputedRow["Dissolved_oxygen__DO___mg_L_"],
+            dissolvedOxygenSaturation: imputedRow["Dissolved_oxygen_saturation____"],
+            specificConductance: imputedRow["Specific_conductance__uS_cm_"],
+            turbidityNTU: imputedRow["Turbidity__NTU_"],
+            pHStdUnits: imputedRow["pH__std_units_"],
+        }
 
-        // const imputed = await res.json()
+        setParameters({
+            Temperatur: imputedValues.temperatureWaterDegC,
+            OksigenTerlarut: imputedValues.dissolvedOxygenMgL,
+            SaturasiOksigen: imputedValues.dissolvedOxygenSaturation,
+            Konduktivitas: imputedValues.specificConductance,
+            Kekeruhan: imputedValues.turbidityNTU,
+            PH: imputedValues.pHStdUnits,
+            ZatPadatTerlarut: imputedValues.specificConductance * 0.64,
+        })
 
-        // // Update state with imputed values
-        // setParameters({
-        //     Temperatur: imputed.temperatureWaterDegC,
-        //     OksigenTerlarut: imputed.dissolvedOxygenMgL,
-        //     SaturasiOksigen: imputed.dissolvedOxygenSaturation,
-        //     Konduktivitas: imputed.specificConductance,
-        //     Kekeruhan: imputed.turbidityNTU,
-        //     PH: imputed.pHStdUnits,
-        //     ZatPadatTerlarut: imputed.tdlMgL,
-        // })
-
-        onImputasi()
-
-        // Optionally: Keep track of which fields were imputed
+        const imputedFields = {
+            Temperatur: imputed.temperatureWaterDegC !== parameters.Temperatur,
+            OksigenTerlarut: imputed.dissolvedOxygenMgL !== parameters.OksigenTerlarut,
+            SaturasiOksigen: imputed.dissolvedOxygenSaturation !== parameters.SaturasiOksigen,
+            Konduktivitas: imputed.specificConductance !== parameters.Konduktivitas,
+            Kekeruhan: imputed.turbidityNTU !== parameters.Kekeruhan,
+            PH: imputed.pHStdUnits !== parameters.PH,
+            ZatPadatTerlarut: imputed.tdlMgL !== parameters.ZatPadatTerlarut,
+        }
+        setErrors((prev) => ({
+            ...prev,
+            parameters: imputedFields,
+        }))
     }
 
     return (
