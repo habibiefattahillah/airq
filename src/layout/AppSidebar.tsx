@@ -18,6 +18,7 @@ import {
   UserCircleIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
+import { useLanguage } from "@/context/LanguageContext";
 
 type NavItem = {
   name: string;
@@ -26,68 +27,69 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const navItems: NavItem[] = [
-  // {
-  //   icon: <GridIcon />,
-  //   name: "Dashboard",
-  //   subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-  // },
-  // {
-  //   icon: <CalenderIcon />,
-  //   name: "Calendar",
-  //   path: "/calendar",
-  // },
-  {
-    icon: <GridIcon />,
-    name: "Klasifikasi WQI",
-    path: "/",
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Tabel Data",
-    path: "/tabel-data",
-  },
-  {
-    icon: <PieChartIcon />,
-    name: "Peta",
-    path: "/peta",
-  }
-];
-
-const othersItems: NavItem[] = [
-  // {
-  //   icon: <PieChartIcon />,
-  //   name: "Charts",
-  //   subItems: [
-  //     { name: "Line Chart", path: "/line-chart", pro: false },
-  //     { name: "Bar Chart", path: "/bar-chart", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <BoxCubeIcon />,
-  //   name: "UI Elements",
-  //   subItems: [
-  //     { name: "Alerts", path: "/alerts", pro: false },
-  //     { name: "Avatar", path: "/avatars", pro: false },
-  //     { name: "Badge", path: "/badge", pro: false },
-  //     { name: "Buttons", path: "/buttons", pro: false },
-  //     { name: "Images", path: "/images", pro: false },
-  //     { name: "Videos", path: "/videos", pro: false },
-  //   ],
-  // },
-  // {
-  //   icon: <PlugInIcon />,
-  //   name: "Authentication",
-  //   subItems: [
-  //     { name: "Sign In", path: "/signin", pro: false },
-  //     { name: "Sign Up", path: "/signup", pro: false },
-  //   ],
-  // },
-];
-
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { language } = useLanguage();
   const pathname = usePathname();
+
+  const navItems: NavItem[] = [
+    // {
+    //   icon: <GridIcon />,
+    //   name: "Dashboard",
+    //   subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    // },
+    // {
+    //   icon: <CalenderIcon />,
+    //   name: "Calendar",
+    //   path: "/calendar",
+    // },
+    {
+      icon: <GridIcon />,
+      name: language === "en" ? "Classify WQI" : "Klasifikasi",
+      path: "/",
+    },
+    {
+      icon: <CalenderIcon />,
+      name: language === "en" ? "Data Table" : "Tabel Data",
+      path: "/tabel-data",
+    },
+    {
+      icon: <PieChartIcon />,
+      name: language === "en" ? "Data Visualization" : "Visualisasi Data",
+      path: "/peta",
+    }
+  ];
+
+  const othersItems: NavItem[] = [
+    // {
+    //   icon: <PieChartIcon />,
+    //   name: "Charts",
+    //   subItems: [
+    //     { name: "Line Chart", path: "/line-chart", pro: false },
+    //     { name: "Bar Chart", path: "/bar-chart", pro: false },
+    //   ],
+    // },
+    // {
+    //   icon: <BoxCubeIcon />,
+    //   name: "UI Elements",
+    //   subItems: [
+    //     { name: "Alerts", path: "/alerts", pro: false },
+    //     { name: "Avatar", path: "/avatars", pro: false },
+    //     { name: "Badge", path: "/badge", pro: false },
+    //     { name: "Buttons", path: "/buttons", pro: false },
+    //     { name: "Images", path: "/images", pro: false },
+    //     { name: "Videos", path: "/videos", pro: false },
+    //   ],
+    // },
+    // {
+    //   icon: <PlugInIcon />,
+    //   name: "Authentication",
+    //   subItems: [
+    //     { name: "Sign In", path: "/signin", pro: false },
+    //     { name: "Sign Up", path: "/signup", pro: false },
+    //   ],
+    // },
+  ];
 
   const renderMenuItems = (
     navItems: NavItem[],

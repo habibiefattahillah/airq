@@ -1,33 +1,24 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { DataTable } from "./data-table"
 import { columns, Data } from "./columns"
 import ComponentCard from "@/components/common/ComponentCard"
 
+async function fetchResultData(): Promise<Data[]> {
+    const res = await fetch("/api/data")
+    if (!res.ok) throw new Error("Failed to fetch data")
+    return res.json()
+}
+
 export default function ResultTable() {
-    const [data, setData] = useState<Data[]>([])
-    const [loading, setLoading] = useState(true)
+    const { data = [], isLoading, isError } = useQuery({
+        queryKey: ["data"],
+        queryFn: fetchResultData,
+    })
 
-    useEffect(() => {
-        async function fetchData() {
-        try {
-            const res = await fetch("/api/data")
-            const json = await res.json()
-            setData(json)
-        } catch (error) {
-            console.error("Failed to fetch data:", error)
-        } finally {
-            setLoading(false)
-        }
-        }
-
-        fetchData()
-    }, [])
-
-    if (loading) {
-        return <div>Loading...</div>
-    }
+    if (isLoading) return <div>Loading...</div>
+    if (isError) return <div>Gagal memuat data klasifikasi.</div>
 
     return (
         <ComponentCard title="Hasil" desc="Hasil klasifikasi WQI" className="overflow-auto">
