@@ -9,6 +9,15 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
+// metadata
+export const metadata = {
+    title: "AirQ",
+    description: "Aplikasi Klasifikasi Kualitas Air",
+    icons: {
+        icon: "water.jpg"
+    },
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{

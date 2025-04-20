@@ -251,35 +251,48 @@ export default function DataInput() {
         },
     })
 
-    const handleImputasi = async () => {
-        const input = {
-            dissolvedOxygenMgL: parameters.OksigenTerlarut,
-            dissolvedOxygenSaturation: parameters.SaturasiOksigen,
-            specificConductance: parameters.Konduktivitas,
-            temperatureWaterDegC: parameters.Temperatur,
-            turbidityNTU: parameters.Kekeruhan,
-            pHStdUnits: parameters.PH,
-            tdlMgL: parameters.ZatPadatTerlarut,
-        }
-
-        const res = await fetch("/api/imputasi", {
-            method: "POST",
-            body: JSON.stringify(input),
+    const onImputasi = async () => {
+        const res = await fetch("/api/dashboard", {
+            method: "GET",
             headers: { "Content-Type": "application/json" },
         })
-
         const imputed = await res.json()
+        console.log("Imputasi response:", imputed)
 
-        // Update state with imputed values
-        setParameters({
-            Temperatur: imputed.temperatureWaterDegC,
-            OksigenTerlarut: imputed.dissolvedOxygenMgL,
-            SaturasiOksigen: imputed.dissolvedOxygenSaturation,
-            Konduktivitas: imputed.specificConductance,
-            Kekeruhan: imputed.turbidityNTU,
-            PH: imputed.pHStdUnits,
-            ZatPadatTerlarut: imputed.tdlMgL,
-        })
+        return imputed
+    }
+
+    const handleImputasi = async () => {
+        // const input = {
+        //     dissolvedOxygenMgL: parameters.OksigenTerlarut,
+        //     dissolvedOxygenSaturation: parameters.SaturasiOksigen,
+        //     specificConductance: parameters.Konduktivitas,
+        //     temperatureWaterDegC: parameters.Temperatur,
+        //     turbidityNTU: parameters.Kekeruhan,
+        //     pHStdUnits: parameters.PH,
+        //     tdlMgL: parameters.ZatPadatTerlarut,
+        // }
+
+        // const res = await fetch("/api/imputasi", {
+        //     method: "POST",
+        //     body: JSON.stringify(input),
+        //     headers: { "Content-Type": "application/json" },
+        // })
+
+        // const imputed = await res.json()
+
+        // // Update state with imputed values
+        // setParameters({
+        //     Temperatur: imputed.temperatureWaterDegC,
+        //     OksigenTerlarut: imputed.dissolvedOxygenMgL,
+        //     SaturasiOksigen: imputed.dissolvedOxygenSaturation,
+        //     Konduktivitas: imputed.specificConductance,
+        //     Kekeruhan: imputed.turbidityNTU,
+        //     PH: imputed.pHStdUnits,
+        //     ZatPadatTerlarut: imputed.tdlMgL,
+        // })
+
+        onImputasi()
 
         // Optionally: Keep track of which fields were imputed
     }

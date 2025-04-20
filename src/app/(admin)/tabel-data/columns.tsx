@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import dynamic from "next/dynamic"
+import { useLanguage } from "@/context/LanguageContext"
 
 export type Account = {
     id: number
@@ -56,7 +57,7 @@ export const columns: ColumnDef<Data>[] = [
         cell: ({ row }) => new Date(row.original.timestamp).toLocaleString(),
     },
     {
-        header: "Lokasi",
+        header: "Location",
         cell: ({ row }) => {
         const { latitude, longitude } = row.original.location
         return (
@@ -81,7 +82,7 @@ export const columns: ColumnDef<Data>[] = [
         },
     },
     {
-        header: "Disubmit Oleh",
+        header: "Contributor",
         cell: ({ row }) => row.original.account.name,
     },
     {
@@ -103,18 +104,23 @@ export const columns: ColumnDef<Data>[] = [
         header: "Parameter",
         cell: ({ row }) => {
         const parameters = row.original.parameters
+        const { language } = useLanguage()
         return (
             <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">View Parameters</Button>
+                <Button variant="outline" className="text-sm">
+                    {language === "en" ? "View Parameters" : "Lihat Parameter"}
+                </Button>
             </DialogTrigger>
             <DialogContent>
-                <DialogTitle>Water Quality Parameters</DialogTitle>
+                <DialogTitle className="text-lg font-bold">
+                    {language === "en" ? "Water Quality Parameters" : "Parameter Kualitas Air"}
+                </DialogTitle>
                 <table className="w-full text-sm mt-2">
                 <thead>
                     <tr>
-                    <th className="text-left">Parameter</th>
-                    <th className="text-left">Value</th>
+                        <th className="text-left">Parameter</th>
+                        <th className="text-left">{language === "en" ? "Value" : "Nilai"}</th>
                     </tr>
                 </thead>
                 <tbody>
