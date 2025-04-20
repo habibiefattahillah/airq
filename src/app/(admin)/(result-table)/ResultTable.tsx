@@ -1,28 +1,30 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
 import { DataTable } from "./data-table"
-import { columns, Data } from "./columns"
+import { columns, Data, Location } from "./columns"
 import ComponentCard from "@/components/common/ComponentCard"
+import { useLanguage } from "@/context/LanguageContext"
+import { useQueryClient } from "@tanstack/react-query"
 
-async function fetchResultData(): Promise<Data[]> {
-    const res = await fetch("/api/data")
-    if (!res.ok) throw new Error("Failed to fetch data")
-    return res.json()
-}
+export default function ResultTable({ latestData }: any) {
+    const { language } = useLanguage()
+    const queryClient = useQueryClient()
+    const location = queryClient.getQueryData(["locations"]) as Location[]
 
-export default function ResultTable() {
-    const { data = [], isLoading, isError } = useQuery({
-        queryKey: ["data"],
-        queryFn: fetchResultData,
-    })
+    if (latestData) {
+        const locationData = location.find((loc) => loc.id === latestData.locationId)
+        if (locationData) {
+            latestData.location = locationData
+        }
+    }
 
-    if (isLoading) return <div>Loading...</div>
-    if (isError) return <div>Gagal memuat data klasifikasi.</div>
+    if (!latestData) {
+        return null
+    }
 
     return (
-        <ComponentCard title="Hasil" desc="Hasil klasifikasi WQI" className="overflow-auto">
-            <DataTable columns={columns} data={data} />
+        <ComponentCard title={language === "en" ? "Result" : "Hasil"} desc={language === "en" ? "WQI Classification Result" : "Hasil klasifikasi WQI"} className="overflow-auto">
+            <DataTable columns={columns} data={[latestData]} />
         </ComponentCard>
     )
 }

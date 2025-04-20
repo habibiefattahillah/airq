@@ -34,7 +34,6 @@ export async function GET() {
 // POST new data
 export async function POST(req: Request) {
     const body = await req.json();
-    console.log("Received data:", body);
 
     let locationId = body.location?.id;
 

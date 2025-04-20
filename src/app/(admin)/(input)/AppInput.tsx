@@ -7,10 +7,12 @@ import dynamic from "next/dynamic"
 import MultiSelect from "@/components/form/MultiSelect"
 import Label from "@/components/form/Label"
 import Input from "@/components/form/input/InputField"
+import { Data } from "../tabel-data/columns"
 import ComponentCard from "@/components/common/ComponentCard"
 import Button from "@/components/ui/button/Button"
 import InfoTooltip from "@/components/common/InfoTooltip"
 import { useLanguage } from "@/context/LanguageContext"
+import ResultTable from "../(result-table)/ResultTable"
 
 const Map = dynamic(() => import("@/components/common/LeafletInputMap"), {
     ssr: false,
@@ -51,6 +53,9 @@ export default function DataInput() {
     const [locationName, setLocationName] = useState<string | null>("Baru")
     const [latitude, setLatitude] = useState<number | null>(null)
     const [longitude, setLongitude] = useState<number | null>(null)
+    const [latestClassification, setLatestClassification] = useState<Data | null>(
+        null
+    )
     const [errors, setErrors] = useState<{
         parameters: { [key: string]: boolean }
         models: boolean
@@ -228,8 +233,17 @@ export default function DataInput() {
         }
     }
 
+    // useQuery the latest classification
+    const { data: latestData } = useQuery({
+        queryKey: ["latest"],
+        queryFn: async () => {
+            return latestClassification as Data
+        },
+    })
+
     const postDataMutation = useMutation({
         mutationFn: async (postPayload: any) => {
+            console.log("Posting data:", postPayload)
             const res = await fetch("/api/data", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -237,13 +251,18 @@ export default function DataInput() {
             })
 
             if (!res.ok) throw new Error("Failed to post data")
-            return res.json()
+
+            const data = await res.json()
+
+            setLatestClassification(data)
+
+            return data
         },
         onSuccess: () => {
             alert("Klasifikasi berhasil disimpan!")
 
-            // Optional: Refetch data or invalidate related cache
             queryClient.invalidateQueries({ queryKey: ["data"] })
+            queryClient.invalidateQueries({ queryKey: ["latest"] })
         },
         onError: (err: any) => {
             console.error("Error posting data:", err)
@@ -259,7 +278,6 @@ export default function DataInput() {
             "Temperature__water__deg_C_": parameters.Temperatur,
             "Turbidity__NTU_": parameters.Kekeruhan,
             "pH__std_units_": parameters.PH,
-            // tdlMgL: parameters.ZatPadatTerlarut,
         }
 
         const res = await fetch("/api/imputasi", {
@@ -272,9 +290,7 @@ export default function DataInput() {
 
         const imputed = await res.json()
 
-        console.log("Imputed data:", imputed)
-
-        const imputedRow = imputed.imputed[0] // ✅ grab the first row of the result
+        const imputedRow = imputed.imputed[0]
 
         const imputedValues = {
             temperatureWaterDegC: imputedRow["Temperature__water__deg_C_"],
@@ -311,6 +327,7 @@ export default function DataInput() {
     }
 
     return (
+        <>
         <ComponentCard title="Input" desc={language === "en" ? "Enter Water Quality Parameters" : "Masukkan Parameter Kualitas Air"}>
         <div className="grid grid-cols-12 gap-4 md:gap-6">
             <div className="col-span-12 md:col-span-4 space-y-3">
@@ -426,5 +443,7 @@ export default function DataInput() {
             </div>
         </div>
         </ComponentCard>
+        <ResultTable latestData={latestData} />
+        </>
     )
 }

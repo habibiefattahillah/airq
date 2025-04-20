@@ -51,11 +51,6 @@ const StaticMap = dynamic(() => import("@/components/common/LeafletStaticMap"), 
 
 export const columns: ColumnDef<Data>[] = [
     {
-        header: "Timestamp",
-        accessorKey: "timestamp",
-        cell: ({ row }) => new Date(row.original.timestamp).toLocaleString(),
-    },
-    {
         header: "Lokasi",
         cell: ({ row }) => {
         const { latitude, longitude } = row.original.location
@@ -79,10 +74,6 @@ export const columns: ColumnDef<Data>[] = [
                 </div>
             )
         },
-    },
-    {
-        header: "Disubmit Oleh",
-        cell: ({ row }) => row.original.account.name,
     },
     {
         header: "WQI",
