@@ -13,6 +13,14 @@ import Button from "@/components/ui/button/Button"
 import InfoTooltip from "@/components/common/InfoTooltip"
 import { useLanguage } from "@/context/LanguageContext"
 import ResultTable from "../(result-table)/ResultTable"
+import {
+    Dialog,
+    DialogTrigger,
+    DialogContent,
+} from "@/components/ui/dialog"
+import { useUser } from "@clerk/nextjs"
+import { json } from "stream/consumers"
+
 
 const Map = dynamic(() => import("@/components/common/LeafletInputMap"), {
     ssr: false,
@@ -47,6 +55,7 @@ const fetchLocations = async () => {
 
 export default function DataInput() {
     const queryClient = useQueryClient()
+    const { user } = useUser()
     const { language } = useLanguage()
     const [selectedValues, setSelectedValues] = useState<string[]>([])
     const [locationId, setLocationId] = useState<number | null>(null)
@@ -56,6 +65,9 @@ export default function DataInput() {
     const [latestClassification, setLatestClassification] = useState<Data | null>(
         null
     )
+    const [photos, setPhotos] = useState<File[]>([])
+    const [previewImage, setPreviewImage] = useState<string | null>(null)
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [errors, setErrors] = useState<{
         parameters: { [key: string]: boolean }
         models: boolean
@@ -147,6 +159,8 @@ export default function DataInput() {
             },
         }
 
+        console.log(JSON.stringify(user))
+
         let hasError = false
 
         // Parameters
@@ -224,7 +238,7 @@ export default function DataInput() {
                 location: input.location,
                 parameters: formattedParams,
                 wqi: formattedWQI,
-                accountId: 1,
+                accountId: user?.id,
             }
 
             postDataMutation.mutate(postPayload)
@@ -342,12 +356,6 @@ export default function DataInput() {
                     setErrors((prev) => ({ ...prev, models: false }))
                     }}
                 />
-            <p className="text-sm text-gray-500">
-                {language === "en" ? "Classification:" : "Klasifikasi:"}
-            </p>
-            <p className="text-sm text-gray-500">
-                {language === "en" ? "0 = Very Good, 1 = Good, 2 = Moderate, 3 = Bad, 4 = Not Suitable for Consumption" : "0 = Sangat Baik, 1 = Baik, 2 = Sedang, 3 = Buruk, 4 = Tidak Layak Konsumsi"}
-            </p>
             </div>
 
             <div className="col-span-12 md:col-span-8 space-y-6">
@@ -405,7 +413,6 @@ export default function DataInput() {
                 className={errors.location.longitude ? "border border-red-500" : ""}
                 readOnly
             />
-            {/* <Label>Nama Lokasi</Label> */}
             <Label className="flex items-center gap-1">
                 {language === "en" ? "Location Name" : "Nama Lokasi"}
             </Label>
@@ -425,6 +432,50 @@ export default function DataInput() {
                 }}
             />
             <input type="hidden" value={locationId ?? ""} readOnly />
+            
+            </div>
+            
+            <div className="mb-4 flex flex-col col-span-12 md:col-span-4 space-y-6">
+                <Label htmlFor="photos">Foto Lokasi</Label>
+                <input
+                    type="file"
+                    id="photos"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                        if (e.target.files) {
+                            setPhotos(Array.from(e.target.files))
+                        }
+                    }}
+                    className="mt-1 block w-full text-sm file:text-white file:bg-blue-500 file:rounded file:px-4 file:py-2 file:border-none"
+                />
+                <div className="flex gap-2 mt-4 overflow-scroll max-w-5xl w-screen">
+                    {photos.map((file, index) => {
+                        const imageUrl = URL.createObjectURL(file)
+                        return (
+                        <Dialog key={index} open={isDialogOpen && previewImage === imageUrl} onOpenChange={setIsDialogOpen}>
+                            <DialogTrigger asChild>
+                            <img
+                                src={imageUrl}
+                                alt={`Preview ${index}`}
+                                className="w-24 h-24 object-cover rounded cursor-pointer border border-gray-300"
+                                onClick={() => {
+                                setPreviewImage(imageUrl)
+                                setIsDialogOpen(true)
+                                }}
+                            />
+                            </DialogTrigger>
+                            <DialogContent className="max-w-3xl p-0 bg-transparent border-none shadow-none">
+                            <img
+                                src={imageUrl}
+                                alt={`Full preview ${index}`}
+                                className="max-h-[80vh] mx-auto object-contain"
+                            />
+                            </DialogContent>
+                        </Dialog>
+                        )
+                    })}
+                </div>
             </div>
 
             <div className="col-span-12 flex justify-center gap-4 md:gap-6">

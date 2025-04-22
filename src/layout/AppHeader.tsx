@@ -4,6 +4,7 @@ import { LanguageToggleButton } from "@/components/header/LanguageToggleButton";
 import NotificationDropdown from "@/components/header/NotificationDropdown";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useSidebar } from "@/context/SidebarContext";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState ,useEffect,useRef} from "react";
@@ -135,7 +136,14 @@ const AppHeader: React.FC = () => {
             <LanguageToggleButton />
           </div>
           {/* <!-- User Area --> */}
-          <UserDropdown /> 
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          {/* <UserDropdown />  */}
     
         </div>
       </div>

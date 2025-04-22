@@ -73,7 +73,7 @@ export async function POST(req: Request) {
     const newData = await prisma.data.create({
         data: {
             timestamp: body.timestamp ? new Date(body.timestamp) : new Date(),
-            accountId: body.accountId || 1,
+            accountId: body.accountId,
             locationId: locationId,
             parameters: body.parameters,
             wqi: body.wqi,

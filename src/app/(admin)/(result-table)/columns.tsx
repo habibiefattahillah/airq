@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import dynamic from "next/dynamic"
 
 export type Account = {
-    id: number
+    id: string
     name: string
     email: string
 }
@@ -25,7 +25,7 @@ export type Data = {
     id: number
     timestamp: string
     account: {
-        id: number
+        id: string
         name: string
     }
     location: {

@@ -7,7 +7,7 @@ import dynamic from "next/dynamic"
 import { useLanguage } from "@/context/LanguageContext"
 
 export type Account = {
-    id: number
+    id: string
     name: string
     email: string
 }
@@ -25,7 +25,7 @@ export type Data = {
     id: number
     timestamp: string
     account: {
-        id: number
+        id: string
         name: string
     }
     location: {
