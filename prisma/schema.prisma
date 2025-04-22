@@ -15,10 +15,13 @@ model Account {
 }
 
 model Location {
-  id        Int    @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   name      String
   latitude  Float
   longitude Float
+  country   String?
+  state     String?
+  address   String?
   data      Data[]
 }
 
@@ -31,16 +34,4 @@ model Data {
   wqi        Json
   account    Account  @relation(fields: [accountId], references: [id])
   location   Location @relation(fields: [locationId], references: [id])
-}
-
-model WaterQualityEntry {
-  id                        Int   @id @default(autoincrement())
-  dissolvedOxygenMgL        Float
-  dissolvedOxygenSaturation Float
-  specificConductanceUSCm   Float
-  temperatureWaterDegC      Float
-  turbidityNTU              Float
-  pHStdUnits                Float
-  tdsMgL                    Float
-  wqi                       Int
 }

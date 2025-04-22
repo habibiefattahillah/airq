@@ -243,7 +243,6 @@ export default function DataInput() {
 
     const postDataMutation = useMutation({
         mutationFn: async (postPayload: any) => {
-            console.log("Posting data:", postPayload)
             const res = await fetch("/api/data", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -252,7 +251,10 @@ export default function DataInput() {
 
             if (!res.ok) throw new Error("Failed to post data")
 
-            const data = await res.json()
+            const { id } = await res.json()
+
+            const data = await fetch(`/api/data/${id}`).then((res) => res.json())
+            if (!data) throw new Error("Failed to fetch data")
 
             setLatestClassification(data)
 

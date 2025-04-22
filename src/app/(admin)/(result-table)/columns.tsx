@@ -16,6 +16,9 @@ export type Location = {
     name: string
     latitude: number
     longitude: number
+    state: string | null
+    country: string | null
+    address: string | null
 }
 
 export type Data = {
@@ -30,6 +33,9 @@ export type Data = {
         name: string
         latitude: number
         longitude: number
+        state: string | null
+        country: string | null
+        address: string | null
     }
     parameters: {
         [key: string]: {
@@ -54,6 +60,7 @@ export const columns: ColumnDef<Data>[] = [
         header: "Lokasi",
         cell: ({ row }) => {
         const { latitude, longitude } = row.original.location
+        console.log(row.original)
         return (
                 <div className="flex justify-between items-center">
                 <p>{row.original.location.name}</p>
@@ -67,6 +74,9 @@ export const columns: ColumnDef<Data>[] = [
                     <DialogTitle>Location</DialogTitle>
                         <p className="text-sm text-muted-foreground">
                             📍 Latitude: {latitude}, Longitude: {longitude}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                            📍 Address: {row.original.location.address}
                         </p>
                         <StaticMap lat={latitude} lng={longitude} />
                     </DialogContent>

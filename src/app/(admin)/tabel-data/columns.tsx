@@ -17,6 +17,8 @@ export type Location = {
     name: string
     latitude: number
     longitude: number
+    country: string
+    state: string
 }
 
 export type Data = {
@@ -31,6 +33,9 @@ export type Data = {
         name: string
         latitude: number
         longitude: number
+        country: string
+        state: string
+        address: string
     }
     parameters: {
         [key: string]: {
@@ -73,6 +78,9 @@ export const columns: ColumnDef<Data>[] = [
                     <DialogTitle>Location</DialogTitle>
                         <p className="text-sm text-muted-foreground">
                             📍 Latitude: {latitude}, Longitude: {longitude}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                            🏠 Address: {row.original.location.address}
                         </p>
                         <StaticMap lat={latitude} lng={longitude} />
                     </DialogContent>

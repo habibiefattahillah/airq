@@ -17,6 +17,9 @@ export async function GET() {
                         name: true,
                         latitude: true,
                         longitude: true,
+                        state: true,
+                        country: true,
+                        address: true,
                     },
                 },
             },
@@ -39,11 +42,25 @@ export async function POST(req: Request) {
 
     if (!locationId && body.location?.latitude != null && body.location?.longitude != null && body.location?.name) {
         try {
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?lat=${body.location.latitude}&lon=${body.location.longitude}&format=json&addressdetails=1&accept-language=en`,
+            );
+
+            if (!response.ok) {
+                console.error("Failed to fetch location data:", response.statusText);
+                return NextResponse.json({ error: "Failed to fetch location data" }, { status: 500 });
+            }
+
+            const locationData = await response.json();
+
             const newLocation = await prisma.location.create({
                 data: {
                     name: body.location.name,
                     latitude: body.location.latitude,
                     longitude: body.location.longitude,
+                    state: locationData?.address?.state || null,
+                    country: locationData?.address?.country || null,
+                    address: locationData?.display_name || null,
                 },
             });
             locationId = newLocation.id;
@@ -56,13 +73,12 @@ export async function POST(req: Request) {
     const newData = await prisma.data.create({
         data: {
             timestamp: body.timestamp ? new Date(body.timestamp) : new Date(),
-            accountId: body.accountId || 1, // fallback dummy
+            accountId: body.accountId || 1,
             locationId: locationId,
             parameters: body.parameters,
             wqi: body.wqi,
         },
     });
 
-    console.log("New data created:", newData);
     return NextResponse.json(newData);
 }
