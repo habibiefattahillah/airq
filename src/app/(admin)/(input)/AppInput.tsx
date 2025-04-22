@@ -435,7 +435,7 @@ export default function DataInput() {
             
             </div>
             
-            <div className="mb-4 flex flex-col col-span-12 md:col-span-4 space-y-6">
+            {/* <div className="mb-4 flex flex-col col-span-12 md:col-span-4 space-y-6">
                 <Label htmlFor="photos">Foto Lokasi</Label>
                 <input
                     type="file"
@@ -476,7 +476,7 @@ export default function DataInput() {
                         )
                     })}
                 </div>
-            </div>
+            </div> */}
 
             <div className="col-span-12 flex justify-center gap-4 md:gap-6">
             <Button size="md" variant="warning" className="px-4"

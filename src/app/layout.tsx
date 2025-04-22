@@ -32,7 +32,7 @@ export default function RootLayout({
       <LanguageProvider>
         <ThemeProvider>
           <SidebarProvider>
-            <html lang="en">
+            <html lang="en" className={" lbdhnrgq idc0_343 kmvrm"}>
               <body className={`__className_ad50fd dark:bg-gray-900 vsc-initialized dark:bg-gray-900`}>
                     {children}
               </body>
