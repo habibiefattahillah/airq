@@ -7,6 +7,10 @@ export async function POST(req: Request) {
 
         const { models, parameters } = body
 
+        console.log(
+            parameters
+        )
+
         const python = spawn("python3", [
             "./scripts/classify.py",
             JSON.stringify(models),

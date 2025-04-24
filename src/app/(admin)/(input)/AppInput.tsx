@@ -27,13 +27,13 @@ const Map = dynamic(() => import("@/components/common/LeafletInputMap"), {
 })
 
 type ParametersInput = {
-    Temperatur: number | null
-    OksigenTerlarut: number | null
-    SaturasiOksigen: number | null
-    Konduktivitas: number | null
-    Kekeruhan: number | null
-    PH: number | null
-    ZatPadatTerlarut: number | null
+    Temperatur : { value: number | null, isImputed: boolean }
+    OksigenTerlarut : { value: number | null, isImputed: boolean }
+    SaturasiOksigen : { value: number | null, isImputed: boolean }
+    Konduktivitas : { value: number | null, isImputed: boolean }
+    Kekeruhan : { value: number | null, isImputed: boolean }
+    PH : { value: number | null, isImputed: boolean }
+    ZatPadatTerlarut : { value: number | null, isImputed: boolean }
 }
 
 type SubmitInput = {
@@ -87,13 +87,13 @@ export default function DataInput() {
     })
 
     const [parameters, setParameters] = useState<ParametersInput>({
-        Temperatur: null,
-        OksigenTerlarut: null,
-        SaturasiOksigen: null,
-        Konduktivitas: null,
-        Kekeruhan: null,
-        PH: null,
-        ZatPadatTerlarut: null,
+        Temperatur: { value: null, isImputed: false },
+        OksigenTerlarut: { value: null, isImputed: false },
+        SaturasiOksigen: { value: null, isImputed: false },
+        Konduktivitas: { value: null, isImputed: false },
+        Kekeruhan: { value: null, isImputed: false },
+        PH: { value: null, isImputed: false },
+        ZatPadatTerlarut: { value: null, isImputed: false },
     })
 
     const parameterDescriptions: Record<keyof ParametersInput, string[]> = {
@@ -112,7 +112,7 @@ export default function DataInput() {
     })
 
     const multiOptions = [
-        { value: "Tabnet", text: "Tabnet (85%)", selected: false },
+        { value: "TabNet", text: "TabNet (85%)", selected: false },
         { value: "CNN", text: "CNN (87%)", selected: false },
         { value: "MLP", text: "MLP (86%)", selected: false },
         { value: "RF", text: "RF (91%)", selected: false },
@@ -135,7 +135,20 @@ export default function DataInput() {
             const res = await fetch("/api/classify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(input),
+                body: JSON.stringify(
+                    {
+                        models: input.models,
+                        parameters: {
+                            Temperatur: input.parameters.Temperatur.value,
+                            OksigenTerlarut: input.parameters.OksigenTerlarut.value,
+                            SaturasiOksigen: input.parameters.SaturasiOksigen.value,
+                            Konduktivitas: input.parameters.Konduktivitas.value,
+                            Kekeruhan: input.parameters.Kekeruhan.value,
+                            PH: input.parameters.PH.value,
+                            ZatPadatTerlarut: input.parameters.ZatPadatTerlarut.value,
+                        },
+                    }
+                ),
             })
 
             if (!res.ok) throw new Error(`API error ${res.status}`)
@@ -148,7 +161,7 @@ export default function DataInput() {
         }
     }
 
-    const handleSubmit = async () => {
+    const handleKlasifikasi = async () => {
         const newErrors = {
             parameters: {} as { [key: string]: boolean },
             models: false,
@@ -159,13 +172,11 @@ export default function DataInput() {
             },
         }
 
-        console.log(JSON.stringify(user))
-
         let hasError = false
 
         // Parameters
         for (const [key, val] of Object.entries(parameters)) {
-            if (val === null || isNaN(val)) {
+            if (val === null || isNaN(val.value as number)) {
                 newErrors.parameters[key] = true
                 hasError = true
             }
@@ -207,7 +218,15 @@ export default function DataInput() {
                 latitude: latitude,
                 longitude: longitude,
             },
-            parameters,
+            parameters: {
+                Temperatur: { value: parameters.Temperatur.value, isImputed: parameters.Temperatur.isImputed },
+                OksigenTerlarut: { value: parameters.OksigenTerlarut.value, isImputed: parameters.OksigenTerlarut.isImputed },
+                SaturasiOksigen: { value: parameters.SaturasiOksigen.value, isImputed: parameters.SaturasiOksigen.isImputed },
+                Konduktivitas: { value: parameters.Konduktivitas.value, isImputed: parameters.Konduktivitas.isImputed },
+                Kekeruhan: { value: parameters.Kekeruhan.value, isImputed: parameters.Kekeruhan.isImputed },
+                PH: { value: parameters.PH.value, isImputed: parameters.PH.isImputed },
+                ZatPadatTerlarut: { value: parameters.ZatPadatTerlarut.value, isImputed: parameters.ZatPadatTerlarut.isImputed },
+            }
         }
 
         await onKlasifikasi(input)
@@ -220,7 +239,10 @@ export default function DataInput() {
             const formattedParams = Object.fromEntries(
                 Object.entries(input.parameters).map(([key, val]) => [
                     key,
-                    { value: val, isImputed: false },
+                    {
+                        value: (val as { value: number | null }).value,
+                        isImputed: (val as { isImputed: boolean }).isImputed,
+                    },
                 ])
             )
 
@@ -238,7 +260,8 @@ export default function DataInput() {
                 location: input.location,
                 parameters: formattedParams,
                 wqi: formattedWQI,
-                accountId: user?.id,
+                // accountId: user?.id,
+                accountId: "user_2w63OqtfajaPVhOUK0iMFgRrEt8",
             }
 
             postDataMutation.mutate(postPayload)
@@ -288,12 +311,12 @@ export default function DataInput() {
 
     const handleImputasi = async () => {
         const input = {
-            "Dissolved_oxygen__DO___mg_L_": parameters.OksigenTerlarut,
-            "Dissolved_oxygen_saturation____": parameters.SaturasiOksigen,
-            "Specific_conductance__uS_cm_": parameters.Konduktivitas,
-            "Temperature__water__deg_C_": parameters.Temperatur,
-            "Turbidity__NTU_": parameters.Kekeruhan,
-            "pH__std_units_": parameters.PH,
+            "Dissolved_oxygen__DO___mg_L_": parameters.OksigenTerlarut.value,
+            "Dissolved_oxygen_saturation____": parameters.SaturasiOksigen.value,
+            "Specific_conductance__uS_cm_": parameters.Konduktivitas.value,
+            "Temperature__water__deg_C_": parameters.Temperatur.value,
+            "Turbidity__NTU_": parameters.Kekeruhan.value,
+            "pH__std_units_": parameters.PH.value,
         }
 
         const res = await fetch("/api/imputasi", {
@@ -318,13 +341,13 @@ export default function DataInput() {
         }
 
         setParameters({
-            Temperatur: imputedValues.temperatureWaterDegC,
-            OksigenTerlarut: imputedValues.dissolvedOxygenMgL,
-            SaturasiOksigen: imputedValues.dissolvedOxygenSaturation,
-            Konduktivitas: imputedValues.specificConductance,
-            Kekeruhan: imputedValues.turbidityNTU,
-            PH: imputedValues.pHStdUnits,
-            ZatPadatTerlarut: imputedValues.specificConductance * 0.64,
+            Temperatur: { value: imputedValues.temperatureWaterDegC, isImputed: imputedValues.temperatureWaterDegC !== parameters.Temperatur.value },
+            OksigenTerlarut: { value: imputedValues.dissolvedOxygenMgL, isImputed: imputedValues.dissolvedOxygenMgL !== parameters.OksigenTerlarut.value },
+            SaturasiOksigen: { value: imputedValues.dissolvedOxygenSaturation, isImputed: imputedValues.dissolvedOxygenSaturation !== parameters.SaturasiOksigen.value },
+            Konduktivitas: { value: imputedValues.specificConductance, isImputed: imputedValues.specificConductance !== parameters.Konduktivitas.value },
+            Kekeruhan: { value: imputedValues.turbidityNTU, isImputed: imputedValues.turbidityNTU !== parameters.Kekeruhan.value },
+            PH: { value: imputedValues.pHStdUnits, isImputed: imputedValues.pHStdUnits !== parameters.PH.value },
+            ZatPadatTerlarut: { value: imputedValues.specificConductance * 0.64, isImputed: imputedValues.specificConductance * 0.64 !== parameters.ZatPadatTerlarut.value },
         })
 
         const imputedFields = {
@@ -370,13 +393,19 @@ export default function DataInput() {
                             </div>
                             <Input
                                 type="number"
-                                value={value ?? ""}
-                                className={errors.parameters[key] ? "border border-red-500" : ""}
+                                value={value.value ?? ""}
+                                className={`${
+                                    value.isImputed ? "bg-yellow-100" : ""
+                                } ${errors.parameters[key] ? "border border-red-500" : ""}`}
+                                placeholder={language === "en" ? "Enter value" : "Masukkan nilai"}
                                 onChange={(e) => {
                                     const val = parseFloat(e.target.value)
                                     setParameters((prev) => ({
                                         ...prev,
-                                        [key]: isNaN(val) ? null : val,
+                                        [key as keyof ParametersInput]: {
+                                            ...prev[key as keyof ParametersInput],
+                                            value: isNaN(val) ? null : val,
+                                        },
                                     }))
                                     setErrors((prev) => ({
                                         ...prev,
@@ -488,7 +517,7 @@ export default function DataInput() {
                 size="md"
                 variant="primary"
                 className="px-4"
-                onClick={handleSubmit}
+                onClick={handleKlasifikasi}
                 disabled={isLoading}
             >
                 {language === "en" ? "Classify" : "Klasifikasi"}
