@@ -101,7 +101,8 @@ export const columns: ColumnDef<Data>[] = [
             <div className="space-y-1">
             {wqiEntries.map(([model, result]) => (
                 <div key={model}>
-                <strong>{model}</strong>: {result.value} (Confidence: {Math.round(result.confidence * 100)}%)
+                <strong>{model}</strong>: {result.value} 
+                {/* (Confidence: {Math.round(result.confidence * 100)}%) */}
                 </div>
             ))}
             </div>

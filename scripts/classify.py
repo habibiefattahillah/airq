@@ -42,18 +42,21 @@ def load_rf_model():
     return joblib.load("models/rf_model.pkl")
 
 def load_mlp_model(input_dim):
-    class MLP(torch.nn.Module):
+    class MLP(nn.Module):
         def __init__(self, input_dim):
             super(MLP, self).__init__()
-            self.fc1 = torch.nn.Linear(input_dim, 64)
-            self.relu = torch.nn.ReLU()
-            self.fc2 = torch.nn.Linear(64, 32)
-            self.fc3 = torch.nn.Linear(32, 5)
+            self.layers = nn.Sequential(
+                nn.Linear(input_dim, 128),
+                nn.ReLU(),
+                nn.Linear(128, 64),
+                nn.ReLU(),
+                nn.Linear(64, 5),
+                nn.Dropout(0.1),
+            )
 
         def forward(self, x):
-            x = self.relu(self.fc1(x))
-            x = self.relu(self.fc2(x))
-            x = self.fc3(x)
+            x = x.view(x.size(0), -1)
+            x = self.layers(x)
             return x
 
     mlp_model = MLP(input_dim).to(device)
@@ -114,17 +117,17 @@ def main():
     input_dim = 7
 
     param_order = [
-        "Temperatur",
         "OksigenTerlarut",
         "SaturasiOksigen",
         "Konduktivitas",
+        "Temperatur",
         "Kekeruhan",
         "PH",
         "ZatPadatTerlarut"
     ]
 
     X = [parameters[k] if parameters[k] is not None else 0 for k in param_order]
-    # X = scale_data(X, scaler)
+    X = scale_data(X, scaler)
     X_tensor = torch.tensor(X, dtype=torch.float32).unsqueeze(0)
     X_tensor = X_tensor.to(device)
 

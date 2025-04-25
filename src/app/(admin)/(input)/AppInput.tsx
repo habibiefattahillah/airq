@@ -260,8 +260,7 @@ export default function DataInput() {
                 location: input.location,
                 parameters: formattedParams,
                 wqi: formattedWQI,
-                // accountId: user?.id,
-                accountId: "user_2w63OqtfajaPVhOUK0iMFgRrEt8",
+                accountId: user?.id,
             }
 
             postDataMutation.mutate(postPayload)
@@ -394,6 +393,7 @@ export default function DataInput() {
                             <Input
                                 type="number"
                                 value={value.value ?? ""}
+                                min="0"
                                 className={`${
                                     value.isImputed ? "bg-yellow-100" : ""
                                 } ${errors.parameters[key] ? "border border-red-500" : ""}`}

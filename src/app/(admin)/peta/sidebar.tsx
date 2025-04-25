@@ -12,7 +12,7 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
     const locationInfo = data[0].location
 
     return (
-        <div className="absolute top-0 right-0 w-full md:w-[500px] h-full shadow-lg z-10 p-4 overflow-y-auto bg-white dark:border-gray-800 dark:bg-black">
+        <div className="absolute top-0 right-0 w-full md:w-[520px] h-full shadow-lg z-10 p-4 overflow-y-auto bg-white dark:border-gray-800 dark:bg-black">
         <button className="text-right mb-4 text-sm text-red-500" onClick={onClose}>
             {language === "en" ? "Close" : "Tutup"}
         </button>
@@ -20,6 +20,7 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
         <h2 className="text-lg font-bold mb-2">{locationInfo.name}</h2>
         <p><strong>{language === "en" ? "Latitude" : "Lintang"}</strong> {locationInfo.latitude}</p>
         <p><strong>{language === "en" ? "Longitude" : "Bujur"}:</strong> {locationInfo.longitude}</p>
+        <p><strong>{language === "en" ? "Address" : "Alamat"}:</strong> {locationInfo.address}</p>
 
         <hr className="my-4" />
         <h3 className="font-semibold mb-2">{language === "en" ? "Classification History" : "Riwayat Klasifikasi"}</h3>
@@ -56,9 +57,9 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
                     {Object.entries(entry.wqi).map(([key, obj]: [string, any]) => (
                         <p key={key}>
                         <strong>{key}:</strong> {String(obj.value)}{" "}
-                        <span className="text-sm text-gray-500">
+                        {/* <span className="text-sm text-gray-500">
                             ({(obj.confidence * 100).toFixed(1)}%)
-                        </span>
+                        </span> */}
                         </p>
                     ))}
                     </td>
