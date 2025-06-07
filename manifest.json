@@ -1,0 +1,22 @@
+{
+    "name": "AirQ",
+    "short_name": "AirQ",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0070f3",
+    "orientation": "portrait",
+    "icons": [
+    {
+        "src": "/images/water.jpg",
+        "type": "image/jpg",
+        "sizes": "192x192"
+    },
+    {
+        "src": "/images/water.jpg",
+        "type": "image/jpg",
+        "sizes": "512x512"
+    }
+]
+
+}

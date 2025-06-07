@@ -8,28 +8,43 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import {
   ClerkProvider
 } from '@clerk/nextjs'
+import { Apple } from 'lucide-react';
 
 const outfit = Outfit({
   subsets: ["latin"],
 });
 
-// metadata
+// ✅ App Router metadata
 export const metadata = {
+  title: "AirQ",
+  description: "Aplikasi Klasifikasi Kualitas Air",
+  manifest: "/manifest.json",
+  themeColor: "#0070f3",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
     title: "AirQ",
-    description: "Aplikasi Klasifikasi Kualitas Air",
-    icons: {
-        icon: "water.jpg"
-    },
-}
+  },
+  icons: {
+    icon: "/images/water.jpg",
+    apple: "/images/water.jpg",
+  }
+};
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`__className_ad50fd dark:bg-gray-900 vsc-initialized dark:bg-gray-900`}>
+      <head>
+        {/* Optional: anything not supported by metadata */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="/images/favicon.ico" />
+      </head>
+      <body className={`${outfit.className} dark:bg-gray-900`}>
         <ClerkProvider>
           <LanguageProvider>
             <ThemeProvider>
@@ -39,7 +54,7 @@ export default function RootLayout({
             </ThemeProvider>
           </LanguageProvider>
         </ClerkProvider>
-        </body>
+      </body>
     </html>
   );
 }

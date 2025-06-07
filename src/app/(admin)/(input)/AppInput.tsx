@@ -65,6 +65,9 @@ export default function DataInput() {
     const [latestClassification, setLatestClassification] = useState<Data | null>(
         null
     )
+    const [isImputasiButtonLoading, setIsImputasiButtonLoading] = useState(false)
+    const [isKlasifikasiButtonLoading, setIsKlasifikasiButtonLoading] = useState(false)
+    const [isImputasiModalOpen, setIsImputasiModalOpen] = useState(false)
     const [photos, setPhotos] = useState<File[]>([])
     const [previewImage, setPreviewImage] = useState<string | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -162,6 +165,8 @@ export default function DataInput() {
     }
 
     const handleKlasifikasi = async () => {
+        if (isKlasifikasiButtonLoading) return
+
         const newErrors = {
             parameters: {} as { [key: string]: boolean },
             models: false,
@@ -210,6 +215,8 @@ export default function DataInput() {
             return
         }
 
+        setIsKlasifikasiButtonLoading(true)
+
         const input = {
             models: selectedValues,
             location: {
@@ -230,6 +237,8 @@ export default function DataInput() {
         }
 
         await onKlasifikasi(input)
+
+        setIsKlasifikasiButtonLoading(false)
     }
 
     const onKlasifikasi = async (input: SubmitInput) => {
@@ -309,6 +318,31 @@ export default function DataInput() {
     })
 
     const handleImputasi = async () => {
+        if (isImputasiButtonLoading) return
+
+        // return if all parameters are filled
+        const isAllFilled = Object.values(parameters).every(
+            (param) => param.value !== null && !isNaN(param.value as number)
+        )
+
+        if (isAllFilled) {
+            alert("Semua parameter sudah terisi.")
+            setIsImputasiButtonLoading(false)
+            return
+        }
+
+        const hasValue = Object.values(parameters).some(
+            (param) => param.value !== null && !isNaN(param.value as number)
+        )
+
+        if (!hasValue) {
+            alert("Setidaknya satu parameter harus memiliki nilai sebelum melakukan imputasi.")
+            setIsImputasiButtonLoading(false)
+            return
+        }
+
+        setIsImputasiButtonLoading(true)
+
         const input = {
             "Dissolved_oxygen__DO___mg_L_": parameters.OksigenTerlarut.value,
             "Dissolved_oxygen_saturation____": parameters.SaturasiOksigen.value,
@@ -362,11 +396,106 @@ export default function DataInput() {
             ...prev,
             parameters: imputedFields,
         }))
+
+        setIsImputasiButtonLoading(false)
     }
+
+    function getRandomFloat(min: number, max: number, decimals = 2): number {
+        return parseFloat((Math.random() * (max - min) + min).toFixed(decimals))
+    }
+    
+    function generateRandomSubmitInput(): SubmitInput {
+        // Randomly decide whether to use a known location ID or not
+        const useKnownLocation = Math.random() < 0.5
+        const locationId = useKnownLocation ? Math.floor(Math.random() * (23 - 10 + 1)) + 10 : null
+        const randomLat = getRandomFloat(-90, 90, 6)
+        const randomLng = getRandomFloat(-180, 180, 6)
+    
+        return {
+            models: ["RF", "CNN"], // example model selection
+            location: {
+                id: locationId,
+                name: locationId ? null : "Baru",
+                latitude: locationId ? null : randomLat,
+                longitude: locationId ? null : randomLng,
+            },
+            parameters: {
+                PH: { value: getRandomFloat(5, 12), isImputed: false },
+                Temperatur: { value: getRandomFloat(12, 24), isImputed: false },
+                OksigenTerlarut: { value: getRandomFloat(4, 12), isImputed: false },
+                SaturasiOksigen: { value: getRandomFloat(50, 150), isImputed: false },
+                Kekeruhan: { value: getRandomFloat(0, 4), isImputed: false },
+                Konduktivitas: { value: getRandomFloat(0, 1000), isImputed: false },
+                ZatPadatTerlarut: { value: getRandomFloat(0, 1000), isImputed: false },
+            }
+        }
+    }    
+
+    const handleGenerateRandom = () => {
+        const randomData = generateRandomSubmitInput()
+    
+        setParameters(randomData.parameters)
+        setSelectedValues(randomData.models)
+        setLocationId(randomData.location.id)
+        setLocationName(randomData.location.name)
+        setLatitude(randomData.location.latitude)
+        setLongitude(randomData.location.longitude)
+    }
+
+    const LoadingSpinner = () => (
+        <svg
+            className="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+        >
+            <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+            ></circle>
+            <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2.93 6.93A8.003 8.003 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3.93-1.008zM12 20a8.003 8.003 0 01-6.93-4.07l-3.93 1.008A11.95 11.95 0 0012 24v-4zm6.93-2.07A8.003 8.003 0 0120 12h4c0 3.042-1.135 5.824-3 7.938l-3.07-.938zM20 12a8.003 8.003 0 01-4.07-6.93l3.93-1A11.95 11.95 0 0024 12h-4z"
+            ></path>
+        </svg>
+    )
 
     return (
         <>
-        <ComponentCard title="Input" desc={language === "en" ? "Enter Water Quality Parameters" : "Masukkan Parameter Kualitas Air"}>
+        {isLoading ? (
+            <div className="flex items-center justify-center h-64">
+                <LoadingSpinner />
+            </div>
+        )
+        : (
+        <ComponentCard className="relative" title="Input" desc={language === "en" ? "Enter Water Quality Parameters" : "Masukkan Parameter Kualitas Air"}>
+
+        {/* Modal */}
+        <Dialog open={isImputasiModalOpen} onOpenChange={setIsImputasiModalOpen}>
+            <DialogContent className="max-w-2xl w-full p-6">
+                <h2 className="text-lg font-semibold mb-4">
+                    {language === "en" ? "Impute Missing Values" : "Imputasi Nilai Hilang"}
+                </h2>
+                <p className="mb-4">
+                    {language === "en" ? "Do understand that imputed values are estimates based on existing data and may not reflect actual measurements." : "Harap pahami bahwa nilai yang diimputasi adalah perkiraan berdasarkan data yang ada dan mungkin tidak mencerminkan pengukuran sebenarnya."}
+                </p>
+                <Button
+                    variant="primary"
+                    onClick={() => {
+                        handleImputasi()
+                        setIsImputasiModalOpen(false)
+                    }}
+                >
+                    {language === "en" ? "Confirm Imputation" : "Konfirmasi Imputasi"}
+                </Button>
+            </DialogContent>
+        </Dialog>
+
         <div className="grid grid-cols-12 gap-4 md:gap-6">
             <div className="col-span-12 md:col-span-4 space-y-3">
                 <MultiSelect
@@ -509,23 +638,34 @@ export default function DataInput() {
 
             <div className="col-span-12 flex justify-center gap-4 md:gap-6">
             <Button size="md" variant="warning" className="px-4"
-                onClick={handleImputasi}
+                onClick={() => setIsImputasiModalOpen(true)}
+                disabled={isImputasiButtonLoading || user === null || isKlasifikasiButtonLoading}
             >
-                {language === "en" ? "Impute" : "Imputasi"}
+                {/* Loading */}
+                {isImputasiButtonLoading && <LoadingSpinner />}
+                {language === "en" ? "Impute Missing Values" : "Imputasi Nilai Hilang"}
             </Button>
+
+            <Button onClick={handleGenerateRandom}>Generate Random Data</Button>
+
             <Button
                 size="md"
                 variant="primary"
                 className="px-4"
                 onClick={handleKlasifikasi}
-                disabled={isLoading}
+                disabled={isKlasifikasiButtonLoading || user === null || isImputasiButtonLoading}
             >
+                {isKlasifikasiButtonLoading && <LoadingSpinner />}
                 {language === "en" ? "Classify" : "Klasifikasi"}
             </Button>
             </div>
         </div>
         </ComponentCard>
+        )}
+
+        {/* Result Table */}
         <ResultTable latestData={latestData} />
+        
         </>
     )
 }
