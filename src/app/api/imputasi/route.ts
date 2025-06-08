@@ -1,24 +1,36 @@
-// app/api/imputasi/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { execFile } from "child_process";
-import { promisify } from "util";
-import path from "path";
-
-const execFileAsync = promisify(execFile);
 
 export async function POST(req: NextRequest) {
-    const body = await req.json();
-    const row = JSON.stringify(body.row); // stringified row data
-
     try {
-        const pythonScriptPath = path.join(process.cwd(), "scripts", "impute.py");
+        const body = await req.json();
+        const row = body.row;
 
-        const { stdout } = await execFileAsync("python3", [pythonScriptPath, row]);
-        const imputedResult = JSON.parse(stdout);
+        // Call your FastAPI impute endpoint
+        const response = await fetch("http://127.0.0.1:8000/impute", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ row }),
+        });
 
-        return NextResponse.json({ imputed: imputedResult });
+        if (!response.ok) {
+        const errorText = await response.text();
+        console.error("FastAPI impute error:", errorText);
+        return NextResponse.json(
+            { error: "Failed to get imputed data from FastAPI" },
+            { status: 500 }
+        );
+        }
+
+        const imputedResult = await response.json();
+
+        return NextResponse.json(imputedResult);
     } catch (err) {
-        console.error("Imputation error:", err);
-        return NextResponse.json({ error: "Failed to run imputation" }, { status: 500 });
+        console.error("Imputation proxy error:", err);
+        return NextResponse.json(
+        { error: "Server error in imputation proxy" },
+        { status: 500 }
+        );
     }
 }

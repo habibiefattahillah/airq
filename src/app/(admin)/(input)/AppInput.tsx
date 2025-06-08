@@ -362,7 +362,7 @@ export default function DataInput() {
 
         const imputed = await res.json()
 
-        const imputedRow = imputed.imputed[0]
+        const imputedRow = imputed.imputed
 
         const imputedValues = {
             temperatureWaterDegC: imputedRow["Temperature__water__deg_C_"],
@@ -384,14 +384,15 @@ export default function DataInput() {
         })
 
         const imputedFields = {
-            Temperatur: imputed.temperatureWaterDegC !== parameters.Temperatur,
-            OksigenTerlarut: imputed.dissolvedOxygenMgL !== parameters.OksigenTerlarut,
-            SaturasiOksigen: imputed.dissolvedOxygenSaturation !== parameters.SaturasiOksigen,
-            Konduktivitas: imputed.specificConductance !== parameters.Konduktivitas,
-            Kekeruhan: imputed.turbidityNTU !== parameters.Kekeruhan,
-            PH: imputed.pHStdUnits !== parameters.PH,
-            ZatPadatTerlarut: imputed.tdlMgL !== parameters.ZatPadatTerlarut,
+            Temperatur: imputedRow["Temperature__water__deg_C_"] !== parameters.Temperatur.value,
+            OksigenTerlarut: imputedRow["Dissolved_oxygen__DO___mg_L_"] !== parameters.OksigenTerlarut.value,
+            SaturasiOksigen: imputedRow["Dissolved_oxygen_saturation____"] !== parameters.SaturasiOksigen.value,
+            Konduktivitas: imputedRow["Specific_conductance__uS_cm_"] !== parameters.Konduktivitas.value,
+            Kekeruhan: imputedRow["Turbidity__NTU_"] !== parameters.Kekeruhan.value,
+            PH: imputedRow["pH__std_units_"] !== parameters.PH.value,
+            ZatPadatTerlarut: (imputedRow["Specific_conductance__uS_cm_"] * 0.64) !== parameters.ZatPadatTerlarut.value,
         }
+
         setErrors((prev) => ({
             ...prev,
             parameters: imputedFields,
