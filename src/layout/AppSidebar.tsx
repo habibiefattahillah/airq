@@ -1,23 +1,15 @@
 "use client";
 import React, { useEffect, useRef, useState,useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  BoxCubeIcon,
   CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
-  PageIcon,
   PieChartIcon,
-  PlugInIcon,
-  TableIcon,
-  UserCircleIcon,
 } from "../icons/index";
-import SidebarWidget from "./SidebarWidget";
 import { useLanguage } from "@/context/LanguageContext";
 
 type NavItem = {
@@ -33,16 +25,6 @@ const AppSidebar: React.FC = () => {
   const pathname = usePathname();
 
   const navItems: NavItem[] = [
-    // {
-    //   icon: <GridIcon />,
-    //   name: "Dashboard",
-    //   subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-    // },
-    // {
-    //   icon: <CalenderIcon />,
-    //   name: "Calendar",
-    //   path: "/calendar",
-    // },
     {
       icon: <GridIcon />,
       name: language === "en" ? "Classify WQI" : "Klasifikasi",

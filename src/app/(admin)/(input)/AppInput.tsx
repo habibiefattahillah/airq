@@ -15,11 +15,9 @@ import { useLanguage } from "@/context/LanguageContext"
 import ResultTable from "../(result-table)/ResultTable"
 import {
     Dialog,
-    DialogTrigger,
     DialogContent,
 } from "@/components/ui/dialog"
 import { useUser } from "@clerk/nextjs"
-import { json } from "stream/consumers"
 import { DialogTitle } from "@radix-ui/react-dialog"
 
 
@@ -69,9 +67,6 @@ export default function DataInput() {
     const [isImputasiButtonLoading, setIsImputasiButtonLoading] = useState(false)
     const [isKlasifikasiButtonLoading, setIsKlasifikasiButtonLoading] = useState(false)
     const [isImputasiModalOpen, setIsImputasiModalOpen] = useState(false)
-    const [photos, setPhotos] = useState<File[]>([])
-    const [previewImage, setPreviewImage] = useState<string | null>(null)
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [errors, setErrors] = useState<{
         parameters: { [key: string]: boolean }
         models: boolean
@@ -597,49 +592,6 @@ export default function DataInput() {
             <input type="hidden" value={locationId ?? ""} readOnly />
             
             </div>
-            
-            {/* <div className="mb-4 flex flex-col col-span-12 md:col-span-4 space-y-6">
-                <Label htmlFor="photos">Foto Lokasi</Label>
-                <input
-                    type="file"
-                    id="photos"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => {
-                        if (e.target.files) {
-                            setPhotos(Array.from(e.target.files))
-                        }
-                    }}
-                    className="mt-1 block w-full text-sm file:text-white file:bg-blue-500 file:rounded file:px-4 file:py-2 file:border-none"
-                />
-                <div className="flex gap-2 mt-4 overflow-scroll max-w-5xl w-screen">
-                    {photos.map((file, index) => {
-                        const imageUrl = URL.createObjectURL(file)
-                        return (
-                        <Dialog key={index} open={isDialogOpen && previewImage === imageUrl} onOpenChange={setIsDialogOpen}>
-                            <DialogTrigger asChild>
-                            <img
-                                src={imageUrl}
-                                alt={`Preview ${index}`}
-                                className="w-24 h-24 object-cover rounded cursor-pointer border border-gray-300"
-                                onClick={() => {
-                                setPreviewImage(imageUrl)
-                                setIsDialogOpen(true)
-                                }}
-                            />
-                            </DialogTrigger>
-                            <DialogContent className="max-w-3xl p-0 bg-transparent border-none shadow-none">
-                            <img
-                                src={imageUrl}
-                                alt={`Full preview ${index}`}
-                                className="max-h-[80vh] mx-auto object-contain"
-                            />
-                            </DialogContent>
-                        </Dialog>
-                        )
-                    })}
-                </div>
-            </div> */}
 
             <div className="col-span-12 flex justify-center gap-4 md:gap-6">
             <Button size="md" variant="warning" className="px-4"

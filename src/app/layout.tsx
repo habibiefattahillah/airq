@@ -8,7 +8,6 @@ import { LanguageProvider } from '@/context/LanguageContext';
 import {
   ClerkProvider
 } from '@clerk/nextjs'
-import { Apple } from 'lucide-react';
 
 const outfit = Outfit({
   subsets: ["latin"],

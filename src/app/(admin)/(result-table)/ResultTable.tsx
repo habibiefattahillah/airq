@@ -1,7 +1,7 @@
 "use client"
 
 import { DataTable } from "./data-table"
-import { columns, Data, Location } from "./columns"
+import { columns, Location } from "./columns"
 import ComponentCard from "@/components/common/ComponentCard"
 import { useLanguage } from "@/context/LanguageContext"
 import { useQueryClient } from "@tanstack/react-query"

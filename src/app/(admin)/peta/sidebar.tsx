@@ -2,19 +2,20 @@ import { useState } from "react"
 import { useLanguage } from "@/context/LanguageContext"
 
 type SidebarProps = {
-  data: any[] // array of classification history entries
+  data: any[]
   onClose: () => void
 }
 
 export default function SidebarPeta({ data, onClose }: SidebarProps) {
+  const { language } = useLanguage()
+  const [currentPage, setCurrentPage] = useState(0)
+
   if (!data || data.length === 0) return null
 
-  const { language } = useLanguage()
   const locationInfo = data[0].location
 
   // Pagination setup
   const pageSize = 3
-  const [currentPage, setCurrentPage] = useState(0)
 
   const totalPages = Math.ceil(data.length / pageSize)
   const startIndex = currentPage * pageSize

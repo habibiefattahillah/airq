@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import dynamic from "next/dynamic"
 import { useLanguage } from "@/context/LanguageContext"
+import type { Row } from "@tanstack/react-table"
 
 export type Account = {
     id: string
@@ -54,6 +55,44 @@ export type Data = {
 const StaticMap = dynamic(() => import("@/components/common/LeafletStaticMap"), {
     ssr: false,
 })
+
+function ParameterCell({ row }: { row: Row<Data> }) {
+    const { language } = useLanguage()
+    const parameters = row.original.parameters
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="outline" className="text-sm">
+                    {language === "en" ? "View Parameters" : "Lihat Parameter"}
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogTitle className="text-lg font-bold">
+                    {language === "en" ? "Water Quality Parameters" : "Parameter Kualitas Air"}
+                </DialogTitle>
+                <table className="w-full text-sm mt-2">
+                    <thead>
+                        <tr>
+                            <th className="text-left">Parameter</th>
+                            <th className="text-left">{language === "en" ? "Value" : "Nilai"}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.entries(parameters).map(([name, param]) => (
+                            <tr key={name}>
+                                <td>{name}</td>
+                                <td className={param.isImputed ? "text-orange-500 font-semibold" : ""}>
+                                    {param.value}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </DialogContent>
+        </Dialog>
+    )
+}
 
 export const columns: ColumnDef<Data>[] = [
     {
@@ -111,41 +150,6 @@ export const columns: ColumnDef<Data>[] = [
     },
     {
         header: "Parameter",
-        cell: ({ row }) => {
-        const parameters = row.original.parameters
-        const { language } = useLanguage()
-        return (
-            <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="outline" className="text-sm">
-                    {language === "en" ? "View Parameters" : "Lihat Parameter"}
-                </Button>
-            </DialogTrigger>
-            <DialogContent>
-                <DialogTitle className="text-lg font-bold">
-                    {language === "en" ? "Water Quality Parameters" : "Parameter Kualitas Air"}
-                </DialogTitle>
-                <table className="w-full text-sm mt-2">
-                <thead>
-                    <tr>
-                        <th className="text-left">Parameter</th>
-                        <th className="text-left">{language === "en" ? "Value" : "Nilai"}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {Object.entries(parameters).map(([name, { value, isImputed }]) => (
-                    <tr key={name}>
-                        <td>{name}</td>
-                        <td className={isImputed ? "text-orange-500 font-semibold" : ""}>
-                        {value}
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
-                </table>
-            </DialogContent>
-            </Dialog>
-        )
-        },
+        cell: ({ row }) => <ParameterCell row={row} />,
     },
 ]

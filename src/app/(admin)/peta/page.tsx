@@ -36,7 +36,6 @@ export interface DataPoint {
 
 
 export default function PetaPage() {
-    const [dataPoints, setDataPoints] = useState<DataPoint[]>([])
     const [groupedByLocation, setGroupedByLocation] = useState<{ [locId: string]: DataPoint[] }>({})
     const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
 
@@ -44,7 +43,6 @@ export default function PetaPage() {
         const fetchData = async () => {
         const res = await fetch("/api/data")
         const json = await res.json()
-        setDataPoints(json)
 
         const grouped: { [locId: string]: DataPoint[] } = {}
         json.forEach((entry: DataPoint) => {
