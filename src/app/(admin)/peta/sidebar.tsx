@@ -7,19 +7,25 @@ type SidebarProps = {
   onClose: () => void
 }
 
-export default function SidebarPeta({ data, onClose }: SidebarProps) {
-  if (!data || data.length === 0) return null
+type ParameterValue = {
+  value: number | string;
+  isImputed: boolean;
+}
 
+export default function SidebarPeta({ data, onClose }: SidebarProps) {
+  
   const { language } = useLanguage()
   const locationInfo = data[0].location
-
+  
   // Pagination setup
   const pageSize = 3
   const [currentPage, setCurrentPage] = useState(0)
-
+  
   const totalPages = Math.ceil(data.length / pageSize)
   const startIndex = currentPage * pageSize
   const currentData = data.slice(startIndex, startIndex + pageSize)
+  
+  if (!data || data.length === 0) return null
 
   return (
     <div className="absolute top-0 right-0 w-full md:w-[520px] h-full shadow-lg z-10 p-4 overflow-y-auto bg-white dark:border-gray-800 dark:bg-black">
@@ -51,7 +57,7 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
                 <td className="p-2">{entry.account.name}</td>
                 <td className="p-2">{new Date(entry.timestamp).toLocaleString()}</td>
                 <td className="p-2 space-y-1">
-                  {Object.entries(entry.parameters).map(([key, obj]: [string, any]) => (
+                  {Object.entries(entry.parameters).map(([key, obj]: [string, ParameterValue]) => (
                     <p key={key}>
                       <strong>{key}:</strong>{" "}
                       <span className={obj.isImputed ? "text-orange-500" : ""}>
@@ -64,7 +70,7 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
                   ))}
                 </td>
                 <td className="p-2 space-y-1">
-                  {Object.entries(entry.wqi).map(([key, obj]: [string, any]) => (
+                  {Object.entries(entry.parameters).map(([key, obj]: [string, ParameterValue]) => (
                     <p key={key}>
                       <strong>{key}:</strong> {String(obj.value)}
                     </p>
