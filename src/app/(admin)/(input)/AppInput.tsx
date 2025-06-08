@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { useUser } from "@clerk/nextjs"
 import { json } from "stream/consumers"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
 
 const Map = dynamic(() => import("@/components/common/LeafletInputMap"), {
@@ -478,6 +479,9 @@ export default function DataInput() {
 
         {/* Modal */}
         <Dialog open={isImputasiModalOpen} onOpenChange={setIsImputasiModalOpen}>
+            <DialogTitle className="text-lg font-semibold">
+                {language === "en" ? "Impute Missing Values" : "Imputasi Nilai Hilang"}
+            </DialogTitle>
             <DialogContent className="max-w-2xl w-full p-6">
                 <h2 className="text-lg font-semibold mb-4">
                     {language === "en" ? "Impute Missing Values" : "Imputasi Nilai Hilang"}
