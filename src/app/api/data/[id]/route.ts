@@ -1,12 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
-try {
-    const { id } = params;
+type RouteContext = {
+    params: {
+        id: string;
+    };
+};
+
+export async function GET(request: Request, context: RouteContext) {
+    try {
+    const { id } = context.params;
 
     if (!id) {
         return NextResponse.json({ error: "ID is required" }, { status: 400 });
