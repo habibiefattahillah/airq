@@ -25,25 +25,39 @@ const Map = dynamic(() => import("@/components/common/LeafletInputMap"), {
     ssr: false,
 })
 
-type ParametersInput = {
-    Temperatur : { value: number | null, isImputed: boolean }
-    OksigenTerlarut : { value: number | null, isImputed: boolean }
-    SaturasiOksigen : { value: number | null, isImputed: boolean }
-    Konduktivitas : { value: number | null, isImputed: boolean }
-    Kekeruhan : { value: number | null, isImputed: boolean }
-    PH : { value: number | null, isImputed: boolean }
-    ZatPadatTerlarut : { value: number | null, isImputed: boolean }
+type ParameterValue = {
+    value: number | null
+    isImputed: boolean
+}
+
+type Parameters = {
+    Temperatur: ParameterValue
+    OksigenTerlarut: ParameterValue
+    SaturasiOksigen: ParameterValue
+    Konduktivitas: ParameterValue
+    Kekeruhan: ParameterValue
+    PH: ParameterValue
+    ZatPadatTerlarut: ParameterValue
+}
+
+type Location = {
+    id: number | null
+    name: string
+    latitude: number | null
+    longitude: number | null
 }
 
 type SubmitInput = {
     models: string[]
-    location: {
-        id: number | null
-        name: string | null
-        latitude: number | null
-        longitude: number | null
-    }
-    parameters: ParametersInput
+    location: Location
+    parameters: Parameters
+}
+
+type PostPayload = {
+    location: Location
+    parameters: Parameters
+    wqi: Record<string, { value: number; confidence: number }>
+    accountId?: string
 }
 
 const fetchLocations = async () => {
@@ -85,7 +99,7 @@ export default function DataInput() {
         },
     })
 
-    const [parameters, setParameters] = useState<ParametersInput>({
+    const [parameters, setParameters] = useState<Parameters>({
         Temperatur: { value: null, isImputed: false },
         OksigenTerlarut: { value: null, isImputed: false },
         SaturasiOksigen: { value: null, isImputed: false },
@@ -95,7 +109,7 @@ export default function DataInput() {
         ZatPadatTerlarut: { value: null, isImputed: false },
     })
 
-    const parameterDescriptions: Record<keyof ParametersInput, string[]> = {
+    const parameterDescriptions: Record<keyof Parameters, string[]> = {
         Temperatur: language === "en" ? ["Temperature", "Water temperature (°C)"] : ["Suhu", "Suhu air (°C)"],
         OksigenTerlarut: language === "en" ? ["Dissolved Oxygen", "Amount of oxygen dissolved in the water (mg/L)"] : ["Oksigen Terlarut", "Jumlah oksigen yang terlarut dalam air (mg/L)"],
         SaturasiOksigen: language === "en" ? ["Oxygen Saturation", "Percentage of oxygen saturation in the water (%)"] : ["Saturasi Oksigen", "Persentase kejenuhan oksigen dalam air (%)"],
@@ -213,11 +227,30 @@ export default function DataInput() {
 
         setIsKlasifikasiButtonLoading(true)
 
-        const input = {
+        // const input = {
+        //     models: selectedValues,
+        //     location: {
+        //         id: locationId,
+        //         name: locationName,
+        //         latitude: latitude,
+        //         longitude: longitude,
+        //     },
+        //     parameters: {
+        //         Temperatur: { value: parameters.Temperatur.value, isImputed: parameters.Temperatur.isImputed },
+        //         OksigenTerlarut: { value: parameters.OksigenTerlarut.value, isImputed: parameters.OksigenTerlarut.isImputed },
+        //         SaturasiOksigen: { value: parameters.SaturasiOksigen.value, isImputed: parameters.SaturasiOksigen.isImputed },
+        //         Konduktivitas: { value: parameters.Konduktivitas.value, isImputed: parameters.Konduktivitas.isImputed },
+        //         Kekeruhan: { value: parameters.Kekeruhan.value, isImputed: parameters.Kekeruhan.isImputed },
+        //         PH: { value: parameters.PH.value, isImputed: parameters.PH.isImputed },
+        //         ZatPadatTerlarut: { value: parameters.ZatPadatTerlarut.value, isImputed: parameters.ZatPadatTerlarut.isImputed },
+        //     }
+        // }
+
+        const input: SubmitInput = {
             models: selectedValues,
             location: {
                 id: locationId,
-                name: locationName,
+                name: locationName || "Baru",
                 latitude: latitude,
                 longitude: longitude,
             },
@@ -245,11 +278,11 @@ export default function DataInput() {
                 Object.entries(input.parameters).map(([key, val]) => [
                     key,
                     {
-                        value: (val as { value: number | null }).value,
-                        isImputed: (val as { isImputed: boolean }).isImputed,
+                        value: val.value,
+                        isImputed: val.isImputed,
                     },
                 ])
-            )
+            ) as Parameters
 
             const formattedWQI = Object.fromEntries(
                 Object.entries(result.modelResults).map(([model, res]) => [
@@ -260,12 +293,17 @@ export default function DataInput() {
                     },
                 ])
             )
-
-            const postPayload = {
-                location: input.location,
+            
+            const postPayload: PostPayload = {
+                location: {
+                    id: input.location.id,
+                    name: input.location.name,
+                    latitude: input.location.latitude,
+                    longitude: input.location.longitude,
+                },
                 parameters: formattedParams,
                 wqi: formattedWQI,
-                accountId: user?.id,
+                accountId: user?.id || undefined,
             }
 
             postDataMutation.mutate(postPayload)
@@ -283,32 +321,35 @@ export default function DataInput() {
     })
 
     const postDataMutation = useMutation({
-        mutationFn: async (postPayload: any) => {
-            const res = await fetch("/api/data", {
+        mutationFn: async (postPayload: PostPayload) => {
+        const res = await fetch("/api/data", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(postPayload),
             })
-
+        
             if (!res.ok) throw new Error("Failed to post data")
-
+        
             const { id } = await res.json()
-
+        
             const data = await fetch(`/api/data/${id}`).then((res) => res.json())
             if (!data) throw new Error("Failed to fetch data")
-
+        
             setLatestClassification(data)
 
             return data
         },
         onSuccess: () => {
             alert("Klasifikasi berhasil disimpan!")
-
             queryClient.invalidateQueries({ queryKey: ["data"] })
             queryClient.invalidateQueries({ queryKey: ["latest"] })
         },
-        onError: (err: any) => {
-            console.error("Error posting data:", err)
+        onError: (err: unknown) => {
+        if (err instanceof Error) {
+            console.error("Error posting data:", err.message)
+        } else {
+            console.error("Unknown error posting data:", err)
+        }
             alert("Gagal menyimpan data klasifikasi")
         },
     })
@@ -412,7 +453,7 @@ export default function DataInput() {
             models: ["RF", "CNN"], // example model selection
             location: {
                 id: locationId,
-                name: locationId ? null : "Baru",
+                name: locationId ? "" : "Baru",
                 latitude: locationId ? null : randomLat,
                 longitude: locationId ? null : randomLng,
             },
@@ -515,9 +556,9 @@ export default function DataInput() {
                         <div key={key}>
                             <div className="flex justify-between items-center gap-2">
                                 <Label>
-                                    {parameterDescriptions[key as keyof ParametersInput][0]}
+                                    {parameterDescriptions[key as keyof Parameters][0]}
                                 </Label>
-                                <InfoTooltip message={parameterDescriptions[key as keyof ParametersInput][1]} />
+                                <InfoTooltip message={parameterDescriptions[key as keyof Parameters][1]} />
                             </div>
                             <Input
                                 type="number"
@@ -531,8 +572,8 @@ export default function DataInput() {
                                     const val = parseFloat(e.target.value)
                                     setParameters((prev) => ({
                                         ...prev,
-                                        [key as keyof ParametersInput]: {
-                                            ...prev[key as keyof ParametersInput],
+                                        [key as keyof Parameters]: {
+                                            ...prev[key as keyof Parameters],
                                             value: isNaN(val) ? null : val,
                                         },
                                     }))

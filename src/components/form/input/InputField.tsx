@@ -15,8 +15,8 @@ interface InputProps {
   success?: boolean;
   error?: boolean;
   hint?: string;
-  value?: string | number; // Add this line
-  readOnly?: boolean; // Add this line
+  value?: string | number;
+  readOnly?: boolean;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -36,7 +36,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       success = false,
       error = false,
       hint,
-      value, // Add this line
+      value,
       readOnly = false,
     },
     ref
@@ -68,8 +68,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           disabled={disabled}
           className={inputClasses}
           ref={ref}
-          value={value} // Add this line
-          readOnly={readOnly} // Add this line
+          value={value}
+          readOnly={readOnly}
         />
 
         {hint && (

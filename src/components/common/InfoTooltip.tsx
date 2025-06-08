@@ -12,7 +12,7 @@ export default function InfoTooltip({ message }: { message: string }) {
             const container = containerRef.current;
             if (!tooltip || !container) return;
 
-            const tooltipRect = tooltip.getBoundingClientRect();
+            // const tooltipRect = tooltip.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
             const viewportWidth = window.innerWidth;
             const padding = 8;
