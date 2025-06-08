@@ -16,6 +16,7 @@ export interface DataPoint {
         name: string
         latitude: number
         longitude: number
+        address: string | null
     }
     account: {
         name: string

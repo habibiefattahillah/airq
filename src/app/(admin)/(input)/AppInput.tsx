@@ -227,25 +227,6 @@ export default function DataInput() {
 
         setIsKlasifikasiButtonLoading(true)
 
-        // const input = {
-        //     models: selectedValues,
-        //     location: {
-        //         id: locationId,
-        //         name: locationName,
-        //         latitude: latitude,
-        //         longitude: longitude,
-        //     },
-        //     parameters: {
-        //         Temperatur: { value: parameters.Temperatur.value, isImputed: parameters.Temperatur.isImputed },
-        //         OksigenTerlarut: { value: parameters.OksigenTerlarut.value, isImputed: parameters.OksigenTerlarut.isImputed },
-        //         SaturasiOksigen: { value: parameters.SaturasiOksigen.value, isImputed: parameters.SaturasiOksigen.isImputed },
-        //         Konduktivitas: { value: parameters.Konduktivitas.value, isImputed: parameters.Konduktivitas.isImputed },
-        //         Kekeruhan: { value: parameters.Kekeruhan.value, isImputed: parameters.Kekeruhan.isImputed },
-        //         PH: { value: parameters.PH.value, isImputed: parameters.PH.isImputed },
-        //         ZatPadatTerlarut: { value: parameters.ZatPadatTerlarut.value, isImputed: parameters.ZatPadatTerlarut.isImputed },
-        //     }
-        // }
-
         const input: SubmitInput = {
             models: selectedValues,
             location: {
@@ -443,14 +424,13 @@ export default function DataInput() {
     }
     
     function generateRandomSubmitInput(): SubmitInput {
-        // Randomly decide whether to use a known location ID or not
         const useKnownLocation = Math.random() < 0.5
         const locationId = useKnownLocation ? Math.floor(Math.random() * (23 - 10 + 1)) + 10 : null
         const randomLat = getRandomFloat(-90, 90, 6)
         const randomLng = getRandomFloat(-180, 180, 6)
     
         return {
-            models: ["RF", "CNN"], // example model selection
+            models: ["RF", "CNN"], 
             location: {
                 id: locationId,
                 name: locationId ? "" : "Baru",
@@ -662,7 +642,7 @@ export default function DataInput() {
         )}
 
         {/* Result Table */}
-        <ResultTable latestData={latestData} />
+        <ResultTable latestData={latestData ?? null} />
         
         </>
     )

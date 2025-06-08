@@ -29,8 +29,8 @@ export async function POST(req: Request) {
         })
 
         return NextResponse.json({ message: "User saved!" }, { status: 201 })
-    } catch (error: any) {
+    } catch (error) {
         console.error("Prisma insert error:", error)
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        return NextResponse.json({ error }, { status: 500 })
     }
 }
