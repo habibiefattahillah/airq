@@ -1,41 +1,35 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-type RouteContext = {
-    params: {
-        id: string;
-    };
-};
-
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(request: Request, context: any) {
     try {
-    const { id } = context.params;
+        const { id } = context.params;
 
-    if (!id) {
-        return NextResponse.json({ error: "ID is required" }, { status: 400 });
-    }
+        if (!id) {
+            return NextResponse.json({ error: "ID is required" }, { status: 400 });
+        }
 
-    const data = await prisma.data.findUnique({
-        where: { id: Number(id) },
-        include: {
-            account: {
-            select: {
-                id: true,
-                name: true,
+        const data = await prisma.data.findUnique({
+            where: { id: Number(id) },
+            include: {
+                account: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+                location: {
+                    select: {
+                        id: true,
+                        name: true,
+                        latitude: true,
+                        longitude: true,
+                        state: true,
+                        country: true,
+                        address: true,
+                    },
+                },
             },
-            },
-            location: {
-            select: {
-                id: true,
-                name: true,
-                latitude: true,
-                longitude: true,
-                state: true,
-                country: true,
-                address: true,
-            },
-            },
-        },
         });
 
         return NextResponse.json(data);
