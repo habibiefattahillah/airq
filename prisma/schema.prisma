@@ -7,12 +7,18 @@ datasource db {
   url      = env("DIRECT_URL")
 }
 
-model Account {
-  id    String @id 
-  name  String
-  email String @unique
-  data  Data[]
+enum Role {
+  superadmin
+  guest
 }
+
+model Account {
+  id    String  @id
+  name  String
+  email String  @unique
+  role  Role    @default(guest)
+  data  Data[]
+}`
 
 model Location {
   id        Int     @id @default(autoincrement())

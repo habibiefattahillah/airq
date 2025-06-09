@@ -28,17 +28,17 @@ const AppSidebar: React.FC = () => {
     {
       icon: <GridIcon />,
       name: language === "en" ? "Classify WQI" : "Klasifikasi",
-      path: "/",
+      path: "/application",
     },
     {
       icon: <CalenderIcon />,
       name: language === "en" ? "Data Table" : "Tabel Data",
-      path: "/tabel-data",
+      path: "/application/tabel-data",
     },
     {
       icon: <PieChartIcon />,
       name: language === "en" ? "Data Visualization" : "Visualisasi Data",
-      path: "/peta",
+      path: "/application/peta",
     }
   ];
 
