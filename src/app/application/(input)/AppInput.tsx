@@ -69,6 +69,7 @@ const fetchLocations = async () => {
 export default function DataInput() {
     const queryClient = useQueryClient()
     const { user } = useUser()
+    const userRole = user?.publicMetadata?.role || "guest"
     const { language } = useLanguage()
     const [selectedValues, setSelectedValues] = useState<string[]>([])
     const [locationId, setLocationId] = useState<number | null>(null)
