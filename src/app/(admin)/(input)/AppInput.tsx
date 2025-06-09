@@ -293,7 +293,6 @@ export default function DataInput() {
         }
     }
 
-    // useQuery the latest classification
     const { data: latestData } = useQuery({
         queryKey: ["latest"],
         queryFn: async () => {
@@ -322,7 +321,7 @@ export default function DataInput() {
         },
         onSuccess: () => {
             alert("Klasifikasi berhasil disimpan!")
-            queryClient.invalidateQueries({ queryKey: ["data"] })
+            queryClient.invalidateQueries({ queryKey: ["water-quality-data"] })
             queryClient.invalidateQueries({ queryKey: ["latest"] })
         },
         onError: (err: unknown) => {
