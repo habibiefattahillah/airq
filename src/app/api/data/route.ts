@@ -1,17 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server"
 
 export async function GET() {
-    const { userId, sessionClaims } = await auth()
-
-    if (!userId) {
-        return new Response("Unauthorized", { status: 401 })
-    }
-
-    const role = sessionClaims?.role || "guest";
     const data = await prisma.data.findMany({
-        where: role === "guest" ? { accountId: userId } : {},
         include: {
             account: {
                 select: {
@@ -32,8 +23,10 @@ export async function GET() {
             },
         },
     });
-    
-    return Response.json(data)
+
+    return new Response(JSON.stringify(data), {
+        headers: { "Content-Type": "application/json" },
+    });
 }
 
 

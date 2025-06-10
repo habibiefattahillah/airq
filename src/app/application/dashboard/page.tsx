@@ -147,22 +147,7 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* WQI by Model */}
-      <Card className="col-span-1">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Average WQI by Model</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={wqiChartData}>
-              <XAxis dataKey="model" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="averageWQI" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Model Usage Distribution - 1 column */}
+      {/* Model Usage Distribution*/}
       <Card className="col-span-1">
         <CardContent className="p-4">
           <h2 className="text-lg font-semibold mb-2">Model Usage Distribution</h2>
@@ -192,7 +177,22 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Data by Country - 1 column */}
+      {/* WQI by Model */}
+      <Card className="col-span-1">
+        <CardContent className="p-4">
+          <h2 className="text-lg font-semibold mb-2">Average WQI by Model</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={wqiChartData}>
+              <XAxis dataKey="model" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="averageWQI" fill="#82ca9d" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Data by Country*/}
       <Card className="col-span-1">
         <CardContent className="p-4">
           <h2 className="text-lg font-semibold mb-2">Data by Country</h2>

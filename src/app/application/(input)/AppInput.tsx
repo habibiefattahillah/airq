@@ -7,7 +7,7 @@ import dynamic from "next/dynamic"
 import MultiSelect from "@/components/form/MultiSelect"
 import Label from "@/components/form/Label"
 import Input from "@/components/form/input/InputField"
-import { Data } from "../tabel-data/columns"
+import { Data, Parameters } from "@/app/types"
 import ComponentCard from "@/components/common/ComponentCard"
 import Button from "@/components/ui/button/Button"
 import InfoTooltip from "@/components/common/InfoTooltip"
@@ -25,22 +25,7 @@ const Map = dynamic(() => import("@/components/common/LeafletInputMap"), {
     ssr: false,
 })
 
-type ParameterValue = {
-    value: number | null
-    isImputed: boolean
-}
-
-type Parameters = {
-    Temperatur: ParameterValue
-    OksigenTerlarut: ParameterValue
-    SaturasiOksigen: ParameterValue
-    Konduktivitas: ParameterValue
-    Kekeruhan: ParameterValue
-    PH: ParameterValue
-    ZatPadatTerlarut: ParameterValue
-}
-
-type Location = {
+type LocationInput = {
     id: number | null
     name: string
     latitude: number | null
@@ -49,12 +34,12 @@ type Location = {
 
 type SubmitInput = {
     models: string[]
-    location: Location
+    location: LocationInput
     parameters: Parameters
 }
 
 type PostPayload = {
-    location: Location
+    location: LocationInput
     parameters: Parameters
     wqi: Record<string, { value: number; confidence: number }>
     accountId?: string
