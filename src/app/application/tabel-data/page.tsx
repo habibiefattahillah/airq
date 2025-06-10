@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query"
 import { DataTable } from "./data-table"
-import { columns, Data } from "./columns"
+import { columns } from "./columns"
+import { Data } from "@/app/types"
 import ComponentCard from "@/components/common/ComponentCard"
 
 async function fetchData(): Promise<Data[]> {

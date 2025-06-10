@@ -6,51 +6,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import dynamic from "next/dynamic"
 import { useLanguage } from "@/context/LanguageContext"
 import type { Row } from "@tanstack/react-table"
-
-export type Account = {
-    id: string
-    name: string
-    email: string
-}
-
-export type Location = {
-    id: number
-    name: string
-    latitude: number
-    longitude: number
-    country: string
-    state: string
-}
-
-export type Data = {
-    id: number
-    timestamp: string
-    account: {
-        id: string
-        name: string
-    }
-    location: {
-        id: number
-        name: string
-        latitude: number
-        longitude: number
-        country: string
-        state: string
-        address: string
-    }
-    parameters: {
-        [key: string]: {
-        value: number
-        isImputed: boolean
-        }
-    }
-    wqi: {
-        [model: string]: {
-        value: number
-        confidence: number
-        }
-    }
-}
+import { Data } from "@/app/types"
 
 const StaticMap = dynamic(() => import("@/components/common/LeafletStaticMap"), {
     ssr: false,

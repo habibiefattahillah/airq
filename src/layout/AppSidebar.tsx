@@ -40,6 +40,12 @@ const AppSidebar: React.FC = () => {
       name: language === "en" ? "Data Visualization" : "Visualisasi Data",
       path: "/application/peta",
     }
+    ,
+    {
+      icon: <PieChartIcon />,
+      name: language === "en" ? "Dashboard" : "Dasbor",
+      path: "/application/dashboard",
+    }
   ];
 
   const othersItems: NavItem[] = [

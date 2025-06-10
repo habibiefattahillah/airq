@@ -146,6 +146,8 @@ export default function LandingPage() {
                   src="/images/drinking-water.svg"
                   alt="Environmental"
                   className="w-full h-full object-cover rounded-2xl"
+                  width={400}
+                  height={400}
                 />
               </div>
             </div>
@@ -163,6 +165,8 @@ export default function LandingPage() {
                       <Image
                         src={item.image}
                         alt={item.title}
+                        width={400}
+                        height={400}
                         className="w-full h-full object-cover rounded-xl"
                       />
                     </div>

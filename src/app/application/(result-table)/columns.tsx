@@ -4,52 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import dynamic from "next/dynamic"
-
-export type Account = {
-    id: string
-    name: string
-    email: string
-}
-
-export type Location = {
-    id: number
-    name: string
-    latitude: number
-    longitude: number
-    state: string | null
-    country: string | null
-    address: string | null
-}
-
-export type Data = {
-    id: number
-    timestamp: string
-    account: {
-        id: string
-        name: string
-    }
-    location: {
-        id: number
-        name: string
-        latitude: number
-        longitude: number
-        state: string | null
-        country: string | null
-        address: string | null
-    }
-    parameters: {
-        [key: string]: {
-        value: number
-        isImputed: boolean
-        }
-    }
-    wqi: {
-        [model: string]: {
-        value: number
-        confidence: number
-        }
-    }
-}
+import { Data } from "@/app/types"
 
 const StaticMap = dynamic(() => import("@/components/common/LeafletStaticMap"), {
     ssr: false,
