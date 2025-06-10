@@ -4,7 +4,7 @@
 import { MapContainer, TileLayer, Marker } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { DataPoint } from "@/app/(admin)/peta/page"
+import { DataPoint } from "@/app/application/peta/page"
 
 const defaultIcon = L.icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
