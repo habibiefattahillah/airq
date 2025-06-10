@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server"
 
-export async function GET(req: Request) {
+export async function GET() {
     const { userId, sessionClaims } = await auth()
 
     if (!userId) {
@@ -10,34 +10,6 @@ export async function GET(req: Request) {
     }
 
     const role = sessionClaims?.role || "guest";
-
-    // const data = await prisma.data.findMany({
-    //     include: {
-    //         account: {
-    //             select: {
-    //                 id: true,
-    //                 name: true,
-    //             },
-    //         },
-    //         location: {
-    //             select: {
-    //                 id: true,
-    //                 name: true,
-    //                 latitude: true,
-    //                 longitude: true,
-    //                 state: true,
-    //                 country: true,
-    //                 address: true,
-    //             },
-    //         },
-    //     },
-    // });
-
-    // return new Response(JSON.stringify(data), {
-    //     headers: { "Content-Type": "application/json" },
-    // });
-
-    // if guest, return only data where accountId matches userId. Otherwise, return all data
     const data = await prisma.data.findMany({
         where: role === "guest" ? { accountId: userId } : {},
         include: {

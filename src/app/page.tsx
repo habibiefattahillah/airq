@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button"
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 export default function LandingPage() {
   const router = useRouter()
@@ -133,7 +134,7 @@ export default function LandingPage() {
               <h1 className="text-5xl md:text-7xl font-extrabold text-blue-600 tracking-tight">AirQ</h1>
               <p className="mt-6 text-xl md:text-2xl text-gray-700">Giving you insights into water quality, share your data with the world.</p>
               <div className="mt-8 bg-gray-100 rounded-lg p-4 font-mono text-sm text-gray-800 border border-gray-200">
-                <p>// Example API Endpoints</p>
+                <p>Example API Endpoints</p>
                 <p>POST airq-pearl.vercel.app/api/classify</p>
                 <p>POST airq-pearl.vercel.app/api/impute</p>
               </div>
@@ -141,7 +142,7 @@ export default function LandingPage() {
             <div className="flex-1 flex justify-center items-center">
               <div className="w-full h-64 md:h-96 bg-blue-100 rounded-2xl shadow-inner flex items-center justify-center">
                 {/* <span className="text-gray-400 text-sm">[ Environmental Image Placeholder ]</span> */}
-                <img
+                <Image
                   src="/images/drinking-water.svg"
                   alt="Environmental"
                   className="w-full h-full object-cover rounded-2xl"
@@ -159,7 +160,7 @@ export default function LandingPage() {
                 <CarouselItem key={index} className="h-screen flex flex-col md:flex-row items-center justify-between gap-10 p-8">
                   <div className="flex-1 flex justify-center items-center">
                     <div className="w-full h-64 md:h-96 bg-gray-100 rounded-xl shadow-md overflow-hidden">
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.title}
                         className="w-full h-full object-cover rounded-xl"
