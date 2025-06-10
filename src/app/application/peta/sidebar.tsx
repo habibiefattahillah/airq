@@ -7,14 +7,10 @@ type SidebarProps = {
   onClose: () => void
 }
 
-type ParameterValue = {
-  value: number | string;
-  isImputed: boolean;
-}
-
 export default function SidebarPeta({ data, onClose }: SidebarProps) {
   
   const { language } = useLanguage()
+  const [currentPage, setCurrentPage] = useState(0)
   
   if (!data || data.length === 0) return null
   
@@ -22,7 +18,6 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
   
   // Pagination setup
   const pageSize = 3
-  const [currentPage, setCurrentPage] = useState(0)
   
   const totalPages = Math.ceil(data.length / pageSize)
   const startIndex = currentPage * pageSize

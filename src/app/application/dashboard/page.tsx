@@ -48,7 +48,7 @@ export default function DashboardPage() {
         const rawData = await dataRes.json()
         const countryData = await countryRes.json()
 
-        const byDate = byDateRaw.map((d: any) => ({
+        const byDate = byDateRaw.map((d: { date: string; count: number }) => ({
           date: format(new Date(d.date), 'yyyy-MM-dd'),
           count: Number(d.count),
         }))
@@ -169,7 +169,7 @@ export default function DashboardPage() {
               ))}
               </Pie>
               <Tooltip
-              formatter={(value: number, name: string) => [`${value}`, 'Submissions']}
+              formatter={(value: number) => [`${value}`, 'Submissions']}
               contentStyle={{ backgroundColor: '#fff', borderRadius: 8, border: '1px solid #eee' }}
               />
             </PieChart>
