@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { useLanguage } from "@/context/LanguageContext"
-import { DataPoint } from "./page"
+import { Data } from "@/app/types"
 
 type SidebarProps = {
-  data: DataPoint[]
+  data: Data[]
   onClose: () => void
 }
 
@@ -15,6 +15,9 @@ type ParameterValue = {
 export default function SidebarPeta({ data, onClose }: SidebarProps) {
   
   const { language } = useLanguage()
+  
+  if (!data || data.length === 0) return null
+  
   const locationInfo = data[0].location
   
   // Pagination setup
@@ -25,7 +28,15 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
   const startIndex = currentPage * pageSize
   const currentData = data.slice(startIndex, startIndex + pageSize)
   
-  if (!data || data.length === 0) return null
+  const parameterLabels: Record<string, { en: string; id: string }> = {
+    Temperatur: { en: "Temperature", id: "Temperatur" },
+    OksigenTerlarut: { en: "Dissolved Oxygen", id: "Oksigen Terlarut" },
+    SaturasiOksigen: { en: "Oxygen Saturation", id: "Saturasi Oksigen" },
+    Konduktivitas: { en: "Conductivity", id: "Konduktivitas" },
+    Kekeruhan: { en: "Turbidity", id: "Kekeruhan" },
+    PH: { en: "pH", id: "pH" },
+    ZatPadatTerlarut: { en: "Total Dissolved Solids", id: "Zat Padat Terlarut" },
+  }  
 
   return (
     <div className="absolute top-0 right-0 w-full md:w-[520px] h-full shadow-lg z-10 p-4 overflow-y-auto bg-white dark:border-gray-800 dark:bg-black">
@@ -57,11 +68,11 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
                 <td className="p-2">{entry.account.name}</td>
                 <td className="p-2">{new Date(entry.timestamp).toLocaleString()}</td>
                 <td className="p-2 space-y-1">
-                  {Object.entries(entry.parameters).map(([key, obj]: [string, ParameterValue]) => (
+                  {Object.entries(entry.parameters).map(([key, obj]) => (
                     <p key={key}>
-                      <strong>{key}:</strong>{" "}
+                      <strong>{parameterLabels[key]?.[language] || key}:</strong>{" "}
                       <span className={obj.isImputed ? "text-orange-500" : ""}>
-                        {String(obj.value)}
+                        {obj.value !== null ? obj.value : "-"}
                       </span>
                       {obj.isImputed && (
                         <span className="text-xs text-gray-400 ml-1">(imputed)</span>
@@ -70,9 +81,12 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
                   ))}
                 </td>
                 <td className="p-2 space-y-1">
-                  {Object.entries(entry.parameters).map(([key, obj]: [string, ParameterValue]) => (
-                    <p key={key}>
-                      <strong>{key}:</strong> {String(obj.value)}
+                  {Object.entries(entry.wqi).map(([modelName, wqiObj]) => (
+                    <p key={modelName}>
+                      <strong>{modelName}:</strong> {wqiObj.value.toFixed(2)}{" "}
+                      <span className="text-xs text-gray-400">
+                        ({(wqiObj.confidence * 100).toFixed(0)}%)
+                      </span>
                     </p>
                   ))}
                 </td>

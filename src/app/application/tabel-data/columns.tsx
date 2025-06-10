@@ -16,6 +16,16 @@ function ParameterCell({ row }: { row: Row<Data> }) {
     const { language } = useLanguage()
     const parameters = row.original.parameters
 
+    const parameterNameMap: Record<string, { en: string; id: string }> = {
+        Temperatur: { en: "Temperature", id: "Temperatur" },
+        OksigenTerlarut: { en: "Dissolved Oxygen", id: "Oksigen Terlarut" },
+        SaturasiOksigen: { en: "Oxygen Saturation", id: "Saturasi Oksigen" },
+        Konduktivitas: { en: "Conductivity", id: "Konduktivitas" },
+        Kekeruhan: { en: "Turbidity", id: "Kekeruhan" },
+        PH: { en: "pH", id: "pH" },
+        ZatPadatTerlarut: { en: "Total Dissolved Solids", id: "Zat Padat Terlarut" },
+    }      
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -35,14 +45,17 @@ function ParameterCell({ row }: { row: Row<Data> }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {Object.entries(parameters).map(([name, param]) => (
+                    {Object.entries(parameters).map(([name, param]) => {
+                        const translatedName = parameterNameMap[name]?.[language === "en" ? "en" : "id"] || name
+                        return (
                             <tr key={name}>
-                                <td>{name}</td>
+                                <td>{translatedName}</td>
                                 <td className={param.isImputed ? "text-orange-500 font-semibold" : ""}>
                                     {param.value}
                                 </td>
                             </tr>
-                        ))}
+                        )
+                    })}
                     </tbody>
                 </table>
             </DialogContent>

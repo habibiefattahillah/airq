@@ -48,9 +48,13 @@ export default function TabelData() {
         ? data?.filter(entry => entry.account.id === userId) ?? []
         : data ?? []
 
+    const sortedData = [...filteredData].sort(
+        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    )
+
     return (
         <ComponentCard title="Hasil" desc="Hasil klasifikasi WQI" className="overflow-auto">
-            <DataTable columns={columns} data={filteredData} />
+            <DataTable columns={columns} data={sortedData} />
         </ComponentCard>
     )
 }

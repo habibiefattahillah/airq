@@ -4,40 +4,12 @@
 import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import SidebarPeta from "./sidebar"
+import { Data } from "@/app/types"
 
 const LeafletMap = dynamic(() => import("@/components/common/LeafletMap"), { ssr: false })
 
-// types.ts
-export interface DataPoint {
-    id: string
-    timestamp: string
-    location: {
-        id: string
-        name: string
-        latitude: number
-        longitude: number
-        address: string | null
-    }
-    account: {
-        name: string
-    }
-    parameters: {
-        [key: string]: {
-        value: number | string
-        isImputed: boolean
-        }
-    }
-    wqi: {
-        [model: string]: {
-        value: number
-        confidence: number
-        }
-    }
-}
-
-
 export default function PetaPage() {
-    const [groupedByLocation, setGroupedByLocation] = useState<{ [locId: string]: DataPoint[] }>({})
+    const [groupedByLocation, setGroupedByLocation] = useState<{ [locId: string]: Data[] }>({})
     const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null)
 
     useEffect(() => {
@@ -45,8 +17,8 @@ export default function PetaPage() {
         const res = await fetch("/api/data")
         const json = await res.json()
 
-        const grouped: { [locId: string]: DataPoint[] } = {}
-        json.forEach((entry: DataPoint) => {
+        const grouped: { [locId: string]: Data[] } = {}
+        json.forEach((entry: Data) => {
             const locId = entry.location.id
             if (!grouped[locId]) grouped[locId] = []
             grouped[locId].push(entry)
