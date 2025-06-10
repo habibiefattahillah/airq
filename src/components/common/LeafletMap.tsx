@@ -4,7 +4,7 @@
 import { MapContainer, TileLayer, Marker } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
-import { DataPoint } from "@/app/application/peta/page"
+import { Data } from "@/app/types"
 
 const defaultIcon = L.icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -15,7 +15,7 @@ const defaultIcon = L.icon({
 L.Marker.prototype.options.icon = defaultIcon
 
 interface LeafletMapProps {
-    locations: DataPoint[]
+    locations: Data[]
     onMarkerClick: (locationId: string) => void
 }
 
@@ -31,7 +31,7 @@ export default function LeafletMap({ locations, onMarkerClick }: LeafletMapProps
             key={entry.location.id}
             position={[entry.location.latitude, entry.location.longitude]}
             eventHandlers={{
-                click: () => onMarkerClick(entry.location.id),
+                click: () => onMarkerClick(String(entry.location.id)),
             }}
             />
         ))}
