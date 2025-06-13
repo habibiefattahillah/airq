@@ -8,13 +8,13 @@
     "orientation": "portrait",
     "icons": [
     {
-        "src": "/images/water.jpg",
-        "type": "image/jpg",
+        "src": "/images/water.png",
+        "type": "image/png",
         "sizes": "192x192"
     },
     {
-        "src": "/images/water.jpg",
-        "type": "image/jpg",
+        "src": "/images/water.png",
+        "type": "image/png",
         "sizes": "512x512"
     }
 ]

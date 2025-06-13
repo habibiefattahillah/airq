@@ -9,8 +9,10 @@ import {
   GridIcon,
   HorizontaLDots,
   PieChartIcon,
+  TableIcon,
 } from "../icons/index";
 import { useLanguage } from "@/context/LanguageContext";
+import { Map } from "lucide-react";
 
 type NavItem = {
   name: string;
@@ -31,12 +33,12 @@ const AppSidebar: React.FC = () => {
       path: "/application",
     },
     {
-      icon: <CalenderIcon />,
+      icon: <TableIcon />,
       name: language === "en" ? "Data Table" : "Tabel Data",
       path: "/application/tabel-data",
     },
     {
-      icon: <PieChartIcon />,
+      icon: <Map />,
       name: language === "en" ? "Data Visualization" : "Visualisasi Data",
       path: "/application/peta",
     }
@@ -46,37 +48,6 @@ const AppSidebar: React.FC = () => {
       name: language === "en" ? "Dashboard" : "Dasbor",
       path: "/application/dashboard",
     }
-  ];
-
-  const othersItems: NavItem[] = [
-    // {
-    //   icon: <PieChartIcon />,
-    //   name: "Charts",
-    //   subItems: [
-    //     { name: "Line Chart", path: "/line-chart", pro: false },
-    //     { name: "Bar Chart", path: "/bar-chart", pro: false },
-    //   ],
-    // },
-    // {
-    //   icon: <BoxCubeIcon />,
-    //   name: "UI Elements",
-    //   subItems: [
-    //     { name: "Alerts", path: "/alerts", pro: false },
-    //     { name: "Avatar", path: "/avatars", pro: false },
-    //     { name: "Badge", path: "/badge", pro: false },
-    //     { name: "Buttons", path: "/buttons", pro: false },
-    //     { name: "Images", path: "/images", pro: false },
-    //     { name: "Videos", path: "/videos", pro: false },
-    //   ],
-    // },
-    // {
-    //   icon: <PlugInIcon />,
-    //   name: "Authentication",
-    //   subItems: [
-    //     { name: "Sign In", path: "/signin", pro: false },
-    //     { name: "Sign Up", path: "/signup", pro: false },
-    //   ],
-    // },
   ];
 
   const renderMenuItems = (
@@ -216,32 +187,6 @@ const AppSidebar: React.FC = () => {
 
   // const isActive = (path: string) => path === pathname;
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
-
-  useEffect(() => {
-    // Check if the current path matches any submenu item
-    let submenuMatched = false;
-    ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
-      items.forEach((nav, index) => {
-        if (nav.subItems) {
-          nav.subItems.forEach((subItem) => {
-            if (isActive(subItem.path)) {
-              setOpenSubmenu({
-                type: menuType as "main" | "others",
-                index,
-              });
-              submenuMatched = true;
-            }
-          });
-        }
-      });
-    });
-
-    // If no submenu item matches, close the open submenu
-    if (!submenuMatched) {
-      setOpenSubmenu(null);
-    }
-  }, [pathname,isActive]);
 
   useEffect(() => {
     // Set the height of the submenu items when the submenu is opened

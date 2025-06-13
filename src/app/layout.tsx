@@ -13,20 +13,20 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-// ✅ App Router metadata
-export const metadata = {
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
   title: "AirQ",
   description: "Aplikasi Klasifikasi Kualitas Air",
   manifest: "/manifest.json",
-  themeColor: "#0070f3",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "AirQ",
   },
   icons: {
-    icon: "/images/water.jpg",
-    apple: "/images/water.jpg",
+    icon: "/images/water.png",
+    apple: "/images/water.png",
   }
 };
 
@@ -38,10 +38,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Optional: anything not supported by metadata */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="apple-touch-icon" href="/images/favicon.ico" />
+        <link rel="icon" href="/images/water.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/images/water.png" />
       </head>
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <ClerkProvider>
