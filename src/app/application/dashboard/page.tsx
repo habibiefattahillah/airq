@@ -33,6 +33,7 @@ export default function DashboardPage() {
   const [byDate, setByDate] = useState<SubmissionByDate[]>([])
   const [byCountry, setByCountry] = useState<{ country: string; count: number }[]>([])
   const [rawData, setRawData] = useState<DataItem[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,6 +60,8 @@ export default function DashboardPage() {
         setByCountry(countryData)
       } catch (err) {
         console.error('Dashboard fetch error:', err)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -106,117 +109,154 @@ export default function DashboardPage() {
   })
   const userChartData = Object.values(userCounts).sort((a, b) => b.count - a.count).slice(0, 10)
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
+          <span className="text-lg text-muted-foreground">Loading dashboard...</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 auto-rows-min">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 p-2 md:p-6 auto-rows-min">
       {/* Overview */}
       {overview && (
         <>
-          <Card className="col-span-1"><CardContent className="p-4"><p className="text-sm text-muted-foreground">Accounts</p><p className="text-2xl font-bold">{overview.totalAccounts}</p></CardContent></Card>
-          <Card className="col-span-1"><CardContent className="p-4"><p className="text-sm text-muted-foreground">Data Points</p><p className="text-2xl font-bold">{overview.totalData}</p></CardContent></Card>
-          <Card className="col-span-1"><CardContent className="p-4"><p className="text-sm text-muted-foreground">Locations</p><p className="text-2xl font-bold">{overview.totalLocations}</p></CardContent></Card>
+          <div className="grid grid-cols-3 gap-4 md:col-span-3">
+          <Card className="col-span-1">
+            <CardContent className="p-3 md:p-4">
+              <p className="text-xs md:text-sm text-muted-foreground">Accounts</p>
+              <p className="text-xl md:text-2xl font-bold">{overview.totalAccounts}</p>
+            </CardContent>
+          </Card>
+          <Card className="col-span-1">
+            <CardContent className="p-3 md:p-4">
+              <p className="text-xs md:text-sm text-muted-foreground">Data Points</p>
+              <p className="text-xl md:text-2xl font-bold">{overview.totalData}</p>
+            </CardContent>
+          </Card>
+          <Card className="col-span-1">
+            <CardContent className="p-3 md:p-4">
+              <p className="text-xs md:text-sm text-muted-foreground">Locations</p>
+              <p className="text-xl md:text-2xl font-bold">{overview.totalLocations}</p>
+            </CardContent>
+          </Card>
+          </div>
         </>
       )}
 
       {/* Submissions Over Time */}
-      <Card className="col-span-2">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Data Submissions Over Time</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={byDate}>
-              <XAxis dataKey="date" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+      <Card className="col-span-1 md:col-span-2">
+        <CardContent className="p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold mb-2">Data Submissions Over Time</h2>
+          <div className="w-full h-[200px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={byDate}>
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
       {/* Top Users */}
       <Card className="col-span-1">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Top Users by Submissions</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={userChartData}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="count" fill="#ffc658" />
-            </BarChart>
-          </ResponsiveContainer>
+        <CardContent className="p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold mb-2">Top Users by Submissions</h2>
+          <div className="w-full h-[200px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={userChartData}>
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#ffc658" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
       {/* Model Usage Distribution*/}
       <Card className="col-span-1">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Model Usage Distribution</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-              data={modelUsageData}
-              dataKey="count"
-              nameKey="model"
-              cx="50%"
-              cy="50%"
-              outerRadius={80}
-              label={({ model, percent }) =>
-                `${model} (${(percent * 100).toFixed(0)}%)`
-              }
-              >
-              {modelUsageData.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-              </Pie>
-              <Tooltip
-              formatter={(value: number) => [`${value}`, 'Submissions']}
-              contentStyle={{ backgroundColor: '#fff', borderRadius: 8, border: '1px solid #eee' }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        <CardContent className="p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold mb-2">Model Usage Distribution</h2>
+          <div className="w-full h-[200px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={modelUsageData}
+                  dataKey="count"
+                  nameKey="model"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={60}
+                  label={({ model, percent }) =>
+                    `${model} (${(percent * 100).toFixed(0)}%)`
+                  }
+                >
+                  {modelUsageData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number) => [`${value}`, 'Submissions']}
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: 8, border: '1px solid #eee' }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
       {/* WQI by Model */}
       <Card className="col-span-1">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Average WQI by Model</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={wqiChartData}>
-              <XAxis dataKey="model" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="averageWQI" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
+        <CardContent className="p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold mb-2">Average WQI by Model</h2>
+          <div className="w-full h-[200px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={wqiChartData}>
+                <XAxis dataKey="model" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Bar dataKey="averageWQI" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
       {/* Data by Country*/}
       <Card className="col-span-1">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-semibold mb-2">Data by Country</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-            <Pie
-                data={byCountry}
-                dataKey="count"
-                nameKey="country"
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label={({ country }) => country}
-              >
-                {byCountry.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+        <CardContent className="p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold mb-2">Data by Country</h2>
+          <div className="w-full h-[200px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={byCountry}
+                  dataKey="count"
+                  nameKey="country"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={70}
+                  label={({ country }) => country}
+                >
+                  {byCountry.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
-      
     </div>
   )
 }

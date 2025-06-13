@@ -34,7 +34,7 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
   }  
 
   return (
-    <div className="absolute top-0 right-0 w-full md:w-[520px] h-full shadow-lg z-10 p-4 overflow-y-auto bg-white dark:border-gray-800 dark:bg-black">
+    <div className="absolute top-0 right-0 w-full md:w-[540px] h-full shadow-lg z-10 p-4 overflow-y-auto bg-white dark:border-gray-800 dark:bg-black">
       <button className="text-right mb-4 text-sm text-red-500" onClick={onClose}>
         {language === "en" ? "Close" : "Tutup"}
       </button>
@@ -78,10 +78,11 @@ export default function SidebarPeta({ data, onClose }: SidebarProps) {
                 <td className="p-2 space-y-1">
                   {Object.entries(entry.wqi).map(([modelName, wqiObj]) => (
                     <p key={modelName}>
-                      <strong>{modelName}:</strong> {wqiObj.value.toFixed(2)}{" "}
-                      <span className="text-xs text-gray-400">
-                        ({(wqiObj.confidence * 100).toFixed(0)}%)
-                      </span>
+                      <strong>{modelName}:</strong> {wqiObj.value}{" "}
+                        {/* The way I'm doing it is prob stupid */}
+                        {/* <span className="text-xs text-gray-400">
+                        ({wqiObj.confidence.toFixed(2)}%)
+                        </span> */}
                     </p>
                   ))}
                 </td>
