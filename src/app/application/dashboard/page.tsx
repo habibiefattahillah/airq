@@ -86,10 +86,10 @@ export default function DashboardPage() {
     }
   })
 
-  const wqiChartData = Object.entries(wqiSums).map(([model, stat]) => ({
-    model,
-    averageWQI: stat.total / stat.count,
-  }))
+  // const wqiChartData = Object.entries(wqiSums).map(([model, stat]) => ({
+  //   model,
+  //   averageWQI: stat.total / stat.count,
+  // }))
 
   const modelUsage: Record<string, number> = {}
   rawData.forEach((d) => {
@@ -102,14 +102,14 @@ export default function DashboardPage() {
     count,
   }))
 
-  const userCounts: Record<string, { name: string; count: number }> = {}
-  rawData.forEach((d) => {
-    const { id, name } = d.account
-    if (!userCounts[id]) userCounts[id] = { name, count: 0 }
-    userCounts[id].count += 1
-  })
-  const userChartData = Object.values(userCounts).sort((a, b) => b.count - a.count).slice(0, 10)
-  // Filter byDate according to timeframe
+  // const userCounts: Record<string, { name: string; count: number }> = {}
+  // rawData.forEach((d) => {
+  //   const { id, name } = d.account
+  //   if (!userCounts[id]) userCounts[id] = { name, count: 0 }
+  //   userCounts[id].count += 1
+  // })
+  // const userChartData = Object.values(userCounts).sort((a, b) => b.count - a.count).slice(0, 10)
+  // // Filter byDate according to timeframe
   const now = new Date()
   let filteredByDate = byDate
   if (timeframe !== 'all') {
@@ -128,6 +128,28 @@ export default function DashboardPage() {
     }
     filteredByDate = byDate.filter(d => new Date(d.date) >= startDate)
   }
+
+  const wqiValueDist: Record<number, number> = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+  }
+  
+  rawData.forEach((d) => {
+    for (const modelData of Object.values(d.wqi)) {
+      const value = Math.round(modelData.value)
+      if (value >= 0 && value <= 4) {
+        wqiValueDist[value] += 1
+      }
+    }
+  })
+  
+  const wqiDistributionChartData = Object.entries(wqiValueDist).map(([value, count]) => ({
+    value: Number(value),
+    count,
+  }))
 
   if (loading) {
     return (
@@ -177,7 +199,7 @@ export default function DashboardPage() {
               {['1w', '1m', '1y', 'all'].map((range) => (
               <button
                 key={range}
-                className={`px-2 py-1 rounded text-xs border ${timeframe === range ? 'bg-blue-100 border-blue-400 font-semibold' : 'border-gray-200'}`}
+                className={`px-2 py-1 rounded text-xs border ${timeframe === range ? 'bg-blue-100 dark:bg-blue-600 border-blue-400 font-semibold' : 'border-gray-200'}`}
                 onClick={() => setTimeframe(range as '1w' | '1m' | '1y' | 'all')}
               >
                 {range === '1w' ? '1 Week' : range === '1m' ? '1 Month' : range === '1y' ? '1 Year' : 'All Time'}
@@ -197,7 +219,7 @@ export default function DashboardPage() {
       </Card>
 
       {/* Top Users */}
-      <Card className="col-span-1">
+      {/* <Card className="col-span-1">
         <CardContent className="p-3 md:p-4">
           <h2 className="text-base md:text-lg font-semibold mb-2">Top Users by Submissions</h2>
           <div className="w-full h-[200px] md:h-[300px]">
@@ -211,7 +233,25 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
         </CardContent>
+      </Card> */}
+
+      {/* WQI Value Distribution */}
+      <Card className="col-span-1">
+        <CardContent className="p-3 md:p-4">
+          <h2 className="text-base md:text-lg font-semibold mb-2">WQI Value Distribution</h2>
+          <div className="w-full h-[200px] md:h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={wqiDistributionChartData}>
+                <XAxis dataKey="value" tick={{ fontSize: 10 }} label={{ value: 'WQI Value', position: 'insideBottom', offset: -5 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+                <Tooltip />
+                <Bar dataKey="count" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
       </Card>
+
 
       {/* Model Usage Distribution*/}
       <Card className="col-span-1">
@@ -246,7 +286,7 @@ export default function DashboardPage() {
       </Card>
 
       {/* WQI by Model */}
-      <Card className="col-span-1">
+      {/* <Card className="col-span-1">
         <CardContent className="p-3 md:p-4">
           <h2 className="text-base md:text-lg font-semibold mb-2">Average WQI by Model</h2>
           <div className="w-full h-[200px] md:h-[300px]">
@@ -260,7 +300,7 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Data by Country*/}
       <Card className="col-span-1">

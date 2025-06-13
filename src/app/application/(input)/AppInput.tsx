@@ -12,7 +12,6 @@ import ComponentCard from "@/components/common/ComponentCard"
 import Button from "@/components/ui/button/Button"
 import InfoTooltip from "@/components/common/InfoTooltip"
 import { useLanguage } from "@/context/LanguageContext"
-import ResultTable from "../(result-table)/ResultTable"
 import {
     Dialog,
     DialogContent,
@@ -365,8 +364,6 @@ export default function DataInput() {
             headers: { "Content-Type": "application/json" },
         })
 
-        console.log(res)
-
         const imputed = await res.json()
 
         const imputedRow = imputed.imputed
@@ -380,6 +377,13 @@ export default function DataInput() {
             pHStdUnits: imputedRow["pH__std_units_"],
         }
 
+        // Only impute ZatPadatTerlarut if it was null before
+        const prevZPTValue = parameters.ZatPadatTerlarut.value
+        const shouldImputeZPT = prevZPTValue === null || isNaN(prevZPTValue as number)
+        const newZPTValue = shouldImputeZPT
+            ? imputedValues.specificConductance * 0.64
+            : prevZPTValue
+
         setParameters({
             Temperatur: { value: imputedValues.temperatureWaterDegC, isImputed: imputedValues.temperatureWaterDegC !== parameters.Temperatur.value },
             OksigenTerlarut: { value: imputedValues.dissolvedOxygenMgL, isImputed: imputedValues.dissolvedOxygenMgL !== parameters.OksigenTerlarut.value },
@@ -387,7 +391,7 @@ export default function DataInput() {
             Konduktivitas: { value: imputedValues.specificConductance, isImputed: imputedValues.specificConductance !== parameters.Konduktivitas.value },
             Kekeruhan: { value: imputedValues.turbidityNTU, isImputed: imputedValues.turbidityNTU !== parameters.Kekeruhan.value },
             PH: { value: imputedValues.pHStdUnits, isImputed: imputedValues.pHStdUnits !== parameters.PH.value },
-            ZatPadatTerlarut: { value: imputedValues.specificConductance * 0.64, isImputed: imputedValues.specificConductance * 0.64 !== parameters.ZatPadatTerlarut.value },
+            ZatPadatTerlarut: { value: newZPTValue, isImputed: shouldImputeZPT ? newZPTValue !== parameters.ZatPadatTerlarut.value : parameters.ZatPadatTerlarut.isImputed },
         })
 
         const imputedFields = {
@@ -397,7 +401,7 @@ export default function DataInput() {
             Konduktivitas: imputedRow["Specific_conductance__uS_cm_"] !== parameters.Konduktivitas.value,
             Kekeruhan: imputedRow["Turbidity__NTU_"] !== parameters.Kekeruhan.value,
             PH: imputedRow["pH__std_units_"] !== parameters.PH.value,
-            ZatPadatTerlarut: (imputedRow["Specific_conductance__uS_cm_"] * 0.64) !== parameters.ZatPadatTerlarut.value,
+            ZatPadatTerlarut: shouldImputeZPT ? (imputedRow["Specific_conductance__uS_cm_"] * 0.64) !== parameters.ZatPadatTerlarut.value : false,
         }
 
         setErrors((prev) => ({
@@ -508,67 +512,67 @@ export default function DataInput() {
 
         <Dialog open={isResultModalOpen} onOpenChange={setIsResultModalOpen}>
             <DialogContent className="max-w-3xl w-full p-6">
-                <DialogTitle className="text-lg font-semibold mb-2">
-                    {language === "en" ? "Classification Result" : "Hasil Klasifikasi"}
-                </DialogTitle>
+            <DialogTitle className="text-lg font-semibold mb-2">
+                {language === "en" ? "Classification Result" : "Hasil Klasifikasi"}
+            </DialogTitle>
 
-                {/* Parameters */}
-                <div className="mb-4">
-                    <h3 className="font-semibold mb-2">
-                        {language === "en" ? "Parameters" : "Parameter"}
-                    </h3>
-                    <ul className="grid grid-cols-2 gap-2">
-                        {Object.entries(parameters).map(([key, val]) => (
-                            <li
-                                key={key}
-                                className={`p-2 rounded border ${
-                                    val.value !== null ? "bg-yellow-100" : "bg-gray-100"
-                                }`}
-                            >
-                                <strong>{key}:</strong> {val.value ?? "-"}
-                                {val.isImputed && (
-                                    <span className="ml-2 text-xs text-gray-500">
-                                        ({language === "en" ? "imputed" : "imputasi"})
-                                    </span>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+            {/* Parameters */}
+            <div className="mb-4">
+                <h3 className="font-semibold mb-2">
+                {language === "en" ? "Parameters" : "Parameter"}
+                </h3>
+                <ul className="grid grid-cols-2 gap-2">
+                {Object.entries(parameters).map(([key, val]) => (
+                    <li
+                    key={key}
+                    className={`p-2 rounded border ${
+                        val.isImputed ? "bg-yellow-100 dark:bg-yellow-500" : ""
+                    }`}
+                    >
+                    <strong>{key}:</strong> {val.value ?? "-"}
+                    {val.isImputed && (
+                        <span className="ml-2 text-xs text-gray-500">
+                        ({language === "en" ? "imputed" : "imputasi"})
+                        </span>
+                    )}
+                    </li>
+                ))}
+                </ul>
+            </div>
 
-                {/* Models & WQI */}
-                <div>
-                    <h3 className="font-semibold mb-2">
-                        {language === "en" ? "Model Results (WQI)" : "Hasil Model (WQI)"}
-                    </h3>
-                    <ul className="space-y-2">
-                        {latestClassification &&
-                            Object.entries(latestClassification.wqi).map(
-                                ([model, { value, confidence }]) => (
-                                    <li
-                                        key={model}
-                                        className="p-2 rounded border bg-green-100 flex justify-between"
-                                    >
-                                        <span className="font-semibold">{model}</span>
-                                        <span>
-                                            WQI: {value}{" "}
-                                            {confidence !== undefined && (
-                                                <span className="ml-2 text-xs text-gray-500">
-                                                    ({(confidence * 100).toFixed(1)}%)
-                                                </span>
-                                            )}
-                                        </span>
-                                    </li>
-                                )
-                            )}
-                    </ul>
-                </div>
+            {/* Models & WQI */}
+            <div>
+                <h3 className="font-semibold mb-2">
+                {language === "en" ? "Model Results (WQI)" : "Hasil Model (WQI)"}
+                </h3>
+                <ul className="space-y-2">
+                {latestClassification &&
+                    Object.entries(latestClassification.wqi).map(
+                    ([model, { value }]) => (
+                        <li
+                        key={model}
+                        className="p-2 rounded border flex justify-between"
+                        >
+                        <span className="font-semibold">{model}</span>
+                        <span>
+                            WQI: {value}{" "}
+                            {/* {confidence !== undefined && (
+                            <span className="ml-2 text-xs text-gray-500">
+                                ({(confidence * 100).toFixed(1)}%)
+                            </span>
+                            )} */}
+                        </span>
+                        </li>
+                    )
+                    )}
+                </ul>
+            </div>
 
-                <div className="mt-4 text-right">
-                    <Button onClick={() => setIsResultModalOpen(false)}>
-                        {language === "en" ? "Close" : "Tutup"}
-                    </Button>
-                </div>
+            <div className="mt-4 text-right">
+                <Button onClick={() => setIsResultModalOpen(false)}>
+                {language === "en" ? "Close" : "Tutup"}
+                </Button>
+            </div>
             </DialogContent>
         </Dialog>
 
@@ -600,7 +604,7 @@ export default function DataInput() {
                                 value={value.value ?? ""}
                                 min="0"
                                 className={`${
-                                    value.isImputed ? "bg-yellow-100" : ""
+                                    value.isImputed ? "bg-yellow-100 dark:bg-yellow-500" : ""
                                 } ${errors.parameters[key] ? "border border-red-500" : ""}`}
                                 placeholder={language === "en" ? "Enter value" : "Masukkan nilai"}
                                 onChange={(e) => {
@@ -696,9 +700,6 @@ export default function DataInput() {
         </ComponentCard>
         )}
 
-        {/* Result Table */}
-        <ResultTable latestData={latestData ?? null} />
-        
         </>
     )
 }
