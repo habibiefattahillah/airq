@@ -34,6 +34,7 @@ export default function DashboardPage() {
   const [byCountry, setByCountry] = useState<{ country: string; count: number }[]>([])
   const [rawData, setRawData] = useState<DataItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [timeframe, setTimeframe] = useState<'1w' | '1m' | '1y' | 'all'>('1m')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,6 +109,25 @@ export default function DashboardPage() {
     userCounts[id].count += 1
   })
   const userChartData = Object.values(userCounts).sort((a, b) => b.count - a.count).slice(0, 10)
+  // Filter byDate according to timeframe
+  const now = new Date()
+  let filteredByDate = byDate
+  if (timeframe !== 'all') {
+    let startDate: Date
+    if (timeframe === '1w') {
+      startDate = new Date(now)
+      startDate.setDate(now.getDate() - 6)
+    } else if (timeframe === '1m') {
+      startDate = new Date(now)
+      startDate.setMonth(now.getMonth() - 1)
+    } else if (timeframe === '1y') {
+      startDate = new Date(now)
+      startDate.setFullYear(now.getFullYear() - 1)
+    } else {
+      startDate = new Date(0)
+    }
+    filteredByDate = byDate.filter(d => new Date(d.date) >= startDate)
+  }
 
   if (loading) {
     return (
@@ -149,16 +169,27 @@ export default function DashboardPage() {
       )}
 
       {/* Submissions Over Time */}
-      <Card className="col-span-1 md:col-span-2">
+      <Card className="col-span-1 md:col-span-3">
         <CardContent className="p-3 md:p-4">
           <h2 className="text-base md:text-lg font-semibold mb-2">Data Submissions Over Time</h2>
           <div className="w-full h-[200px] md:h-[300px]">
+            <div className="flex items-center gap-2 mb-2">
+              {['1w', '1m', '1y', 'all'].map((range) => (
+              <button
+                key={range}
+                className={`px-2 py-1 rounded text-xs border ${timeframe === range ? 'bg-blue-100 border-blue-400 font-semibold' : 'border-gray-200'}`}
+                onClick={() => setTimeframe(range as '1w' | '1m' | '1y' | 'all')}
+              >
+                {range === '1w' ? '1 Week' : range === '1m' ? '1 Month' : range === '1y' ? '1 Year' : 'All Time'}
+              </button>
+              ))}
+            </div>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={byDate}>
-                <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-                <Tooltip />
-                <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} />
+              <LineChart data={filteredByDate}>
+              <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+              <Tooltip />
+              <Line type="monotone" dataKey="count" stroke="#8884d8" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
           </div>
