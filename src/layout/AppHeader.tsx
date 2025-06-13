@@ -90,7 +90,7 @@ const AppHeader: React.FC = () => {
               src="/images/water.png"
               alt="Logo"
             />
-            <h1 className="font-bold text-2xl">AirQ</h1>
+            <h1 className="font-bold text-2xl dark:text-white">AirQ</h1>
           </Link>
 
           <button

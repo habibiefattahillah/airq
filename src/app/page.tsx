@@ -21,6 +21,7 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 
 export default function LandingPage() {
   const router = useRouter()
@@ -97,8 +98,8 @@ export default function LandingPage() {
 
   return (
     <main className="relative font-sans">
-      <header className="fixed top-0 left-0 w-full bg-white shadow-md z-10 flex items-center justify-between px-8 py-4 backdrop-blur-sm">
-        <nav className="flex space-x-6">
+      <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50 flex items-center justify-between px-8 py-4 backdrop-blur-sm">
+        <nav className="flex space-x-6 hidden md:block">
           {["section1", "section2", "section3", "section4"].map((id, i) => (
             <button
               key={id}
@@ -109,6 +110,15 @@ export default function LandingPage() {
             </button>
           ))}
         </nav>
+        <Link href="/" className="lg:hidden flex gap-1 items-center">
+            <Image
+              width={56}
+              height={12}
+              src="/images/water.png"
+              alt="Logo"
+            />
+            <h1 className="font-bold text-2xl">AirQ</h1>
+        </Link>
         <div className="flex items-center space-x-2">
           <SignedOut>
             <SignInButton mode="modal">
