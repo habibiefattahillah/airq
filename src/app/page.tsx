@@ -97,7 +97,7 @@ export default function LandingPage() {
   )
 
   return (
-    <main className="relative font-sans">
+    <main className="relative font-sans text-black">
       <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50 flex items-center justify-between px-8 py-4 backdrop-blur-sm">
         <nav className="flex space-x-6 hidden md:block">
           {["section1", "section2", "section3", "section4"].map((id, i) => (

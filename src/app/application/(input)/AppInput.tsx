@@ -66,6 +66,7 @@ export default function DataInput() {
     const [isImputasiButtonLoading, setIsImputasiButtonLoading] = useState(false)
     const [isKlasifikasiButtonLoading, setIsKlasifikasiButtonLoading] = useState(false)
     const [isImputasiModalOpen, setIsImputasiModalOpen] = useState(false)
+    const [isResultModalOpen, setIsResultModalOpen] = useState(false)
     const [errors, setErrors] = useState<{
         parameters: { [key: string]: boolean }
         models: boolean
@@ -305,9 +306,9 @@ export default function DataInput() {
             return data
         },
         onSuccess: () => {
-            alert("Klasifikasi berhasil disimpan!")
             queryClient.invalidateQueries({ queryKey: ["water-quality-data"] })
             queryClient.invalidateQueries({ queryKey: ["latest"] })
+            setIsResultModalOpen(true)
         },
         onError: (err: unknown) => {
         if (err instanceof Error) {
@@ -354,6 +355,8 @@ export default function DataInput() {
             "pH__std_units_": parameters.PH.value,
         }
 
+        console.log(input)
+
         const res = await fetch("/api/imputasi", {
             method: "POST",
             body: JSON.stringify(
@@ -361,6 +364,8 @@ export default function DataInput() {
             ),
             headers: { "Content-Type": "application/json" },
         })
+
+        console.log(res)
 
         const imputed = await res.json()
 
@@ -498,6 +503,72 @@ export default function DataInput() {
                 >
                     {language === "en" ? "Confirm Imputation" : "Konfirmasi Imputasi"}
                 </Button>
+            </DialogContent>
+        </Dialog>
+
+        <Dialog open={isResultModalOpen} onOpenChange={setIsResultModalOpen}>
+            <DialogContent className="max-w-3xl w-full p-6">
+                <DialogTitle className="text-lg font-semibold mb-2">
+                    {language === "en" ? "Classification Result" : "Hasil Klasifikasi"}
+                </DialogTitle>
+
+                {/* Parameters */}
+                <div className="mb-4">
+                    <h3 className="font-semibold mb-2">
+                        {language === "en" ? "Parameters" : "Parameter"}
+                    </h3>
+                    <ul className="grid grid-cols-2 gap-2">
+                        {Object.entries(parameters).map(([key, val]) => (
+                            <li
+                                key={key}
+                                className={`p-2 rounded border ${
+                                    val.value !== null ? "bg-yellow-100" : "bg-gray-100"
+                                }`}
+                            >
+                                <strong>{key}:</strong> {val.value ?? "-"}
+                                {val.isImputed && (
+                                    <span className="ml-2 text-xs text-gray-500">
+                                        ({language === "en" ? "imputed" : "imputasi"})
+                                    </span>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+
+                {/* Models & WQI */}
+                <div>
+                    <h3 className="font-semibold mb-2">
+                        {language === "en" ? "Model Results (WQI)" : "Hasil Model (WQI)"}
+                    </h3>
+                    <ul className="space-y-2">
+                        {latestClassification &&
+                            Object.entries(latestClassification.wqi).map(
+                                ([model, { value, confidence }]) => (
+                                    <li
+                                        key={model}
+                                        className="p-2 rounded border bg-green-100 flex justify-between"
+                                    >
+                                        <span className="font-semibold">{model}</span>
+                                        <span>
+                                            WQI: {value}{" "}
+                                            {confidence !== undefined && (
+                                                <span className="ml-2 text-xs text-gray-500">
+                                                    ({(confidence * 100).toFixed(1)}%)
+                                                </span>
+                                            )}
+                                        </span>
+                                    </li>
+                                )
+                            )}
+                    </ul>
+                </div>
+
+                <div className="mt-4 text-right">
+                    <Button onClick={() => setIsResultModalOpen(false)}>
+                        {language === "en" ? "Close" : "Tutup"}
+                    </Button>
+                </div>
             </DialogContent>
         </Dialog>
 

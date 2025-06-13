@@ -42,7 +42,7 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="apple-touch-icon" href="/images/favicon.ico" />
       </head>
-      <body className={`${outfit.className} dark:bg-gray-900 text-black`}>
+      <body className={`${outfit.className} dark:bg-gray-900 text-black dark:text-white`}>
         <ClerkProvider>
           <LanguageProvider>
             <ThemeProvider>
