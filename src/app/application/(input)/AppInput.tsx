@@ -278,13 +278,6 @@ export default function DataInput() {
         }
     }
 
-    const { data: latestData } = useQuery({
-        queryKey: ["latest"],
-        queryFn: async () => {
-            return latestClassification as Data
-        },
-    })
-
     const postDataMutation = useMutation({
         mutationFn: async (postPayload: PostPayload) => {
         const res = await fetch("/api/data", {
@@ -435,7 +428,7 @@ export default function DataInput() {
                 Temperatur: { value: getRandomFloat(12, 24), isImputed: false },
                 OksigenTerlarut: { value: getRandomFloat(4, 12), isImputed: false },
                 SaturasiOksigen: { value: getRandomFloat(50, 150), isImputed: false },
-                Kekeruhan: { value: getRandomFloat(0, 4), isImputed: false },
+                Kekeruhan: { value: getRandomFloat(0, 2), isImputed: false },
                 Konduktivitas: { value: getRandomFloat(0, 1000), isImputed: false },
                 ZatPadatTerlarut: { value: getRandomFloat(0, 1000), isImputed: false },
             }
@@ -683,7 +676,7 @@ export default function DataInput() {
                 {language === "en" ? "Impute Missing Values" : "Imputasi Nilai Hilang"}
             </Button>
 
-            <Button onClick={handleGenerateRandom}>Generate Random Data</Button>
+            {/* <Button onClick={handleGenerateRandom}>Generate Random Data</Button> */}
 
             <Button
                 size="md"

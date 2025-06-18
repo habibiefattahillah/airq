@@ -101,15 +101,7 @@ export default function DashboardPage() {
     model,
     count,
   }))
-
-  // const userCounts: Record<string, { name: string; count: number }> = {}
-  // rawData.forEach((d) => {
-  //   const { id, name } = d.account
-  //   if (!userCounts[id]) userCounts[id] = { name, count: 0 }
-  //   userCounts[id].count += 1
-  // })
-  // const userChartData = Object.values(userCounts).sort((a, b) => b.count - a.count).slice(0, 10)
-  // // Filter byDate according to timeframe
+  
   const now = new Date()
   let filteredByDate = byDate
   if (timeframe !== 'all') {

@@ -3,23 +3,31 @@ import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 import { Data } from "@/app/types"
 
-// Helper to interpolate color between green (0) and red (4)
-function getColor(value: number) {
-    const v = Math.max(0, Math.min(4, value))
-    const r = Math.round((v / 4) * 255)
-    const g = Math.round((1 - v / 4) * 128)
-    return `rgb(${r},${g},0)`
-}
-
-// Generate a Leaflet icon with a colored SVG
 function getColoredIcon(value: number) {
-    const color = getColor(value)
+    function interpolateColor(value: number) {
+        const v = Math.max(0, Math.min(4, value));
+        if (v <= 2) {
+            const t = v / 2;
+            const r = Math.round((1 - t) * 11 + t * 255);
+            const g = Math.round((1 - t) * 254 + t * 185);
+            const b = Math.round((1 - t) * 2 + t * 1);
+            return `rgb(${r},${g},${b})`;
+        } else {
+            const t = (v - 2) / 2;
+            const r = Math.round((1 - t) * 255 + t * 254);
+            const g = Math.round((1 - t) * 185 + t * 0);
+            const b = Math.round((1 - t) * 1 + t * 0);
+            return `rgb(${r},${g},${b})`;
+        }
+    }
+
+    const color = interpolateColor(value);
     const svg = encodeURIComponent(`
         <svg width="32" height="41" viewBox="0 0 32 41" fill="none" xmlns="http://www.w3.org/2000/svg">
             <ellipse cx="16" cy="20" rx="12" ry="12" fill="${color}" stroke="black" stroke-width="2"/>
             <rect x="14" y="32" width="4" height="8" rx="2" fill="${color}" stroke="black" stroke-width="2"/>
         </svg>
-    `)
+    `);
     return L.icon({
         iconUrl: `data:image/svg+xml,${svg}`,
         iconSize: [32, 41],
