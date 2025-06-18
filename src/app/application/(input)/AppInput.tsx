@@ -405,9 +405,9 @@ export default function DataInput() {
         setIsImputasiButtonLoading(false)
     }
 
-    function getRandomFloat(min: number, max: number, decimals = 2): number {
-        return parseFloat((Math.random() * (max - min) + min).toFixed(decimals))
-    }
+    // function getRandomFloat(min: number, max: number, decimals = 2): number {
+    //     return parseFloat((Math.random() * (max - min) + min).toFixed(decimals))
+    // }
     
     // function generateRandomSubmitInput(): SubmitInput {
     //     const useKnownLocation = Math.random() < 0.5
