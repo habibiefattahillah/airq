@@ -409,42 +409,42 @@ export default function DataInput() {
         return parseFloat((Math.random() * (max - min) + min).toFixed(decimals))
     }
     
-    function generateRandomSubmitInput(): SubmitInput {
-        const useKnownLocation = Math.random() < 0.5
-        const locationId = useKnownLocation ? Math.floor(Math.random() * (23 - 10 + 1)) + 10 : null
-        const randomLat = getRandomFloat(-90, 90, 6)
-        const randomLng = getRandomFloat(-180, 180, 6)
+    // function generateRandomSubmitInput(): SubmitInput {
+    //     const useKnownLocation = Math.random() < 0.5
+    //     const locationId = useKnownLocation ? Math.floor(Math.random() * (23 - 10 + 1)) + 10 : null
+    //     const randomLat = getRandomFloat(-90, 90, 6)
+    //     const randomLng = getRandomFloat(-180, 180, 6)
     
-        return {
-            models: ["RF", "CNN"], 
-            location: {
-                id: locationId,
-                name: locationId ? "" : "Baru",
-                latitude: locationId ? null : randomLat,
-                longitude: locationId ? null : randomLng,
-            },
-            parameters: {
-                PH: { value: getRandomFloat(5, 12), isImputed: false },
-                Temperatur: { value: getRandomFloat(12, 24), isImputed: false },
-                OksigenTerlarut: { value: getRandomFloat(4, 12), isImputed: false },
-                SaturasiOksigen: { value: getRandomFloat(50, 150), isImputed: false },
-                Kekeruhan: { value: getRandomFloat(0, 2), isImputed: false },
-                Konduktivitas: { value: getRandomFloat(0, 1000), isImputed: false },
-                ZatPadatTerlarut: { value: getRandomFloat(0, 1000), isImputed: false },
-            }
-        }
-    }    
+    //     return {
+    //         models: ["RF", "CNN"], 
+    //         location: {
+    //             id: locationId,
+    //             name: locationId ? "" : "Baru",
+    //             latitude: locationId ? null : randomLat,
+    //             longitude: locationId ? null : randomLng,
+    //         },
+    //         parameters: {
+    //             PH: { value: getRandomFloat(5, 12), isImputed: false },
+    //             Temperatur: { value: getRandomFloat(12, 24), isImputed: false },
+    //             OksigenTerlarut: { value: getRandomFloat(4, 12), isImputed: false },
+    //             SaturasiOksigen: { value: getRandomFloat(50, 150), isImputed: false },
+    //             Kekeruhan: { value: getRandomFloat(0, 2), isImputed: false },
+    //             Konduktivitas: { value: getRandomFloat(0, 1000), isImputed: false },
+    //             ZatPadatTerlarut: { value: getRandomFloat(0, 1000), isImputed: false },
+    //         }
+    //     }
+    // }    
 
-    const handleGenerateRandom = () => {
-        const randomData = generateRandomSubmitInput()
+    // const handleGenerateRandom = () => {
+    //     const randomData = generateRandomSubmitInput()
     
-        setParameters(randomData.parameters)
-        setSelectedValues(randomData.models)
-        setLocationId(randomData.location.id)
-        setLocationName(randomData.location.name)
-        setLatitude(randomData.location.latitude)
-        setLongitude(randomData.location.longitude)
-    }
+    //     setParameters(randomData.parameters)
+    //     setSelectedValues(randomData.models)
+    //     setLocationId(randomData.location.id)
+    //     setLocationName(randomData.location.name)
+    //     setLatitude(randomData.location.latitude)
+    //     setLongitude(randomData.location.longitude)
+    // }
 
     const LoadingSpinner = () => (
         <svg
