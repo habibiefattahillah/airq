@@ -5,7 +5,7 @@ export async function POST(req: Request) {
         const body = await req.json()
         const { models, parameters } = body
 
-        const response = await fetch("http://0.0.0.0:8000/classify", {
+        const response = await fetch(`${process.env.BACKEND_URL}/classify`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

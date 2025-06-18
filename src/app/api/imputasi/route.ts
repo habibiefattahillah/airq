@@ -6,7 +6,9 @@ export async function POST(req: NextRequest) {
         const row = body.row;
 
         // Call your FastAPI impute endpoint
-        const response = await fetch("http://0.0.0.0:8000/impute", {
+        const response = await fetch(
+        `${process.env.BACKEND_URL}/impute`
+            , {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
